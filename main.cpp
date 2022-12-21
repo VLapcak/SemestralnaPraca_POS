@@ -1,17 +1,16 @@
 #include <iostream>
-#include <SDL2/SDL.h>
+//#include <SDL2/SDL.h>
+#include "HraciaPlocha.h"
 
 
 int main(int argc, char* argv[]) {
 
-    SDL_Window* window;
+    srand(time(NULL));
 
-    window = SDL_CreateWindow("Clovece nehnevaj sa", 0, 0, 800, 600, SDL_WINDOWEVENT_SHOWN);
-
-
-    SDL_Delay(3000);
-
-    SDL_DestroyWindow(window);
+    HraciaPlocha hp;
+    hp.vykresliPlochu(11);
+    hp.vykresliPlochu(11);
+    hp.vykresliPlochu(11);
 
     return 0;
 
