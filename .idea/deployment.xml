@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+  <component name="PublishConfigData" serverName="pos_2022 (d1c1f633-3dd5-415f-99e5-8f3fb164ca98)" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
       <paths name="pos_2022 (d1c1f633-3dd5-415f-99e5-8f3fb164ca98)">
         <serverdata>
           <mappings>
-            <mapping local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/home/lapcak/semestralka" local="$PROJECT_DIR$" />
           </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/SFML" />
+            <excludedPath local="true" path="$PROJECT_DIR$/SDL2" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+          </excludedPaths>
         </serverdata>
       </paths>
     </serverData>
