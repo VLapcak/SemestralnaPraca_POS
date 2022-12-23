@@ -3,16 +3,21 @@
 #define SEMESTRALKA_LAPCAK_IHRING_PLAYER_H
 
 
-class player {
+class figurka {
 
-    int poziciaX;
-    int poziciaY;
+
+private:
+    int* poziciaXY;
+    char farbaFigurky;
     bool jeNaHracejPloche; // je na hracej ploche inak je v startovacom mieste
     bool jeVDomceku; // koncova pozicia je domcek
 
 public:
-    player(int x, int y);
-
+    figurka();
+    void posunOPolicka(int pocet);
+    void setFarbu(char farba);
+    int* getPoziciu();
+    void setPoziciu(int x, int y);
 };
 
 
