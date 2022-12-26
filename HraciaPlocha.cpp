@@ -17,7 +17,6 @@ HraciaPlocha::HraciaPlocha() {
     }
 
     //aktualnaPlocha = new int[11][11];
-    vykresliPlochu();
 
 }
 
@@ -90,16 +89,6 @@ void HraciaPlocha::vykresliPlochu() {
                 cout << "   ";
         }
         cout << endl;
-    }
-
-    //hod kockou napisany cez konzolu
-    string hod;
-    cin >> hod;
-
-    if (hod == "Hod") {
-
-        int cislo = rand() % 6 + 1;
-        cout << "Hodil si: " << cislo << endl;
     }
 
 }
