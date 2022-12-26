@@ -2,16 +2,21 @@
 <project version="4">
   <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
-      <paths name="pos_2022 (d1c1f633-3dd5-415f-99e5-8f3fb164ca98)">
+      <paths name="POS_2022 (ea56e68c-e66d-4a4e-8c0f-3bc527197cab)">
         <serverdata>
           <mappings>
-            <mapping deploy="/home/lapcak/semestralka" local="$PROJECT_DIR$" />
+            <mapping local="$PROJECT_DIR$" web="/" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="Remote Host (7c7ade55-0cc1-45f8-8854-869e1278ed95)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/tmp.CKBDUGijd4" local="$PROJECT_DIR$" />
           </mappings>
           <excludedPaths>
-            <excludedPath local="true" path="$PROJECT_DIR$/SDL2" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
-            <excludedPath local="true" path="$PROJECT_DIR$/SFML" />
           </excludedPaths>
         </serverdata>
       </paths>

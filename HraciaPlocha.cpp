@@ -24,9 +24,10 @@ void HraciaPlocha::vykresliPlochu() {
 
     //                      [x,y]
     //cerveny zacina na     [4,0]
-    //modry zacina na       [0,6]
-    //zeleny zacina na      [11,6]
-    //biely zacina na       [4,11]
+    //zeleny zacina na      [0,6]
+    //biely zacina na       [6,10]
+    //modry zacina na       [10,4]
+
 
     //inicializacia aktualnej plochy aby sa rovnala zakladnej ploche
     for (int i = 0; i < velkost; ++i) {
