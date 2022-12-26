@@ -18,6 +18,8 @@ public:
     void setFarbu(char farba);
     char getFarbu();
     Figurka getFigurka(int id) const;
+    bool hadze3Krat();
+    void vykonajTah();
 };
 
 
