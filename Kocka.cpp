@@ -1,6 +1,6 @@
-#include "kocka.h"
+#include "Kocka.h"
 #include "stdlib.h"
 
-int kocka::getCislo() {
+int Kocka::getCislo() {
     return rand() % 6 + 1;
 }

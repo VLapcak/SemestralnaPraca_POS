@@ -2,7 +2,7 @@
 #define SEMESTRALKA_LAPCAK_IHRING_KOCKA_H
 
 
-class kocka {
+class Kocka {
 
 public:
     int getCislo();

@@ -1,27 +1,27 @@
-#include "hrac.h"
+#include "Hrac.h"
 
-hrac::hrac() {
+Hrac::Hrac() {
     pocetFigurok = 4;
     pocetFigurokDomcek = 0;
     farbaHraca = 'X';
 
     for (int i = 0; i < pocetFigurok; ++i) {
-        figurky[i] = *new figurka();
+        figurky[i] = *new Figurka();
         figurky[i].setFarbu(farbaHraca);
     }
 }
 
-void hrac::setFarbu(char farba) {
+void Hrac::setFarbu(char farba) {
 
     farbaHraca = farba;
 }
 
 
-figurka hrac::getFigurka(int id) const {
+Figurka Hrac::getFigurka(int id) const {
     return figurky[id];
 }
 
-char hrac::getFarbu() {
+char Hrac::getFarbu() {
     return farbaHraca;
 }
 

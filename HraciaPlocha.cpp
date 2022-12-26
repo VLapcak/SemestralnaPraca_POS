@@ -1,5 +1,5 @@
 #include "HraciaPlocha.h"
-#include "hrac.h"
+#include "Hrac.h"
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
@@ -12,7 +12,7 @@ HraciaPlocha::HraciaPlocha() {
     pocetHracov = 4;
 
     for (int i = 0; i < pocetHracov; ++i) {
-        hraci[i] = *new hrac();
+        hraci[i] = *new Hrac();
         hraci[i].setFarbu(farby[i]);
     }
 

@@ -1,20 +1,23 @@
 #ifndef SEMESTRALKA_LAPCAK_IHRING_HRAC_H
 #define SEMESTRALKA_LAPCAK_IHRING_HRAC_H
-#include "figurka.h"
+#include "Figurka.h"
+#include "Kocka.h"
 
-class hrac {
+class Hrac {
 
 
     int pocetFigurok;
     int pocetFigurokDomcek;
     char farbaHraca;
-    figurka figurky[4];
+    Figurka figurky[4];
+    Kocka kocka;
+
 
 public:
-    hrac();
+    Hrac();
     void setFarbu(char farba);
     char getFarbu();
-    figurka getFigurka(int id) const;
+    Figurka getFigurka(int id) const;
 };
 
 

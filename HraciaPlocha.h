@@ -2,14 +2,14 @@
 #define SEMESTRALKA_LAPCAK_IHRING_HRACIAPLOCHA_H
 
 
-#include "hrac.h"
+#include "Hrac.h"
 
 class HraciaPlocha {
 
 private:
     int velkost;
     int pocetHracov;
-    hrac hraci[4];
+    Hrac hraci[4];
     char farby[4]{'C', 'M', 'Z', 'B'};
 
     // kde sa nachadzaju figurky na zaciatku hry
