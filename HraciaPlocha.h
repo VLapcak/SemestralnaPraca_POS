@@ -8,9 +8,7 @@ class HraciaPlocha {
 
 private:
     int velkost;
-    int pocetHracov;
     Hrac hraci[4];
-    char farby[4]{'C', 'M', 'Z', 'B'};
 
     // kde sa nachadzaju figurky na zaciatku hry
     int zBodyCerveny[4][2]{{0, 0},
@@ -18,12 +16,12 @@ private:
                            {0, 1},
                            {1,1}};
 
-    int zBodyModry[4][2]{{9, 0},
+    int zBodyZeleny[4][2]{{9, 0},
                          {10, 0},
                          {9, 1},
                          {10,1}};
 
-    int zBodyZeleny[4][2]{{0, 9},
+    int zBodyModry[4][2]{{0, 9},
                           {1, 9},
                           {0, 10},
                           {1,10}};
@@ -51,7 +49,7 @@ private:
 
 
 public:
-    HraciaPlocha();
+    HraciaPlocha(Hrac* h);
     void vykresliPlochu();
     bool getStatus();
 };

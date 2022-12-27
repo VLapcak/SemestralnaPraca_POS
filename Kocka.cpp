@@ -1,5 +1,5 @@
 #include "Kocka.h"
-#include "stdlib.h"
+#include <cstdlib>
 
 int Kocka::getCislo() {
     return rand() % 6 + 1;

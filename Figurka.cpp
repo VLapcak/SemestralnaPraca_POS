@@ -5,6 +5,7 @@ Figurka::Figurka() {
 
     poziciaXY = new int[2];
     farbaFigurky = 'X';
+    idFigurky = 0;
     jeVZakladni = true;
     jeNaStartovacejPozicii = false;
     jeNaHracejPloche = false;
@@ -34,6 +35,10 @@ void Figurka::setPoziciu(int x, int y) {
     poziciaXY[1] = y;
 }
 
+void Figurka::setIDFigurky(int cislo) {
+    idFigurky = cislo;
+}
+
 int *Figurka::getPoziciu() {
 
     return poziciaXY;
@@ -54,3 +59,8 @@ bool Figurka::getJeNaHracejPloche() {
 bool Figurka::getJeVDomceku() {
     return jeVDomceku;
 }
+
+int Figurka::getIDFigurky() {
+    return idFigurky;
+}
+

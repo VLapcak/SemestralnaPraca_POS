@@ -7,17 +7,12 @@
 using namespace std;
 
 
-HraciaPlocha::HraciaPlocha() {
+HraciaPlocha::HraciaPlocha(Hrac* h) {
     velkost = 11;
-    pocetHracov = 4;
 
-    for (int i = 0; i < pocetHracov; ++i) {
-        hraci[i] = *new Hrac();
-        hraci[i].setFarbu(farby[i]);
+    for (int i = 0; i < 4; ++i) {
+        hraci[i] = h[i];
     }
-
-    //aktualnaPlocha = new int[11][11];
-
 }
 
 void HraciaPlocha::vykresliPlochu() {
@@ -38,21 +33,29 @@ void HraciaPlocha::vykresliPlochu() {
 
 
     //dostan pozicie figurok a farby
-    for (auto hr : hraci) {
+    for (auto hr: hraci) {
         for (int j = 0; j < 4; ++j) {
 
             switch (hr.getFarbu()) {
-                case 'C': hr.getFigurka(j).setPoziciu(zBodyCerveny[j][0], zBodyCerveny[j][1]);
-                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] = 5;
+                case 'C':
+                    hr.getFigurka(j).setPoziciu(zBodyCerveny[j][0], zBodyCerveny[j][1]);
+                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] =
+                            5 * 10 + hr.getFigurka(j).getIDFigurky();
                     break;
-                case 'M': hr.getFigurka(j).setPoziciu(zBodyModry[j][0], zBodyModry[j][1]);
-                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] = 6;
+                case 'M':
+                    hr.getFigurka(j).setPoziciu(zBodyModry[j][0], zBodyModry[j][1]);
+                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] =
+                            6 * 10 + hr.getFigurka(j).getIDFigurky();
                     break;
-                case 'Z': hr.getFigurka(j).setPoziciu(zBodyZeleny[j][0], zBodyZeleny[j][1]);
-                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] = 7;
+                case 'Z':
+                    hr.getFigurka(j).setPoziciu(zBodyZeleny[j][0], zBodyZeleny[j][1]);
+                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] =
+                            7 * 10 + hr.getFigurka(j).getIDFigurky();
                     break;
-                case 'B': hr.getFigurka(j).setPoziciu(zBodyBiely[j][0], zBodyBiely[j][1]);
-                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] = 8;
+                case 'B':
+                    hr.getFigurka(j).setPoziciu(zBodyBiely[j][0], zBodyBiely[j][1]);
+                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] =
+                            8 * 10 + hr.getFigurka(j).getIDFigurky();
                     break;
             }
 
@@ -65,8 +68,6 @@ void HraciaPlocha::vykresliPlochu() {
         }
 
     }
-
-
     cout << endl;
 
     //preved cisla pola na textovu podobu
@@ -74,20 +75,20 @@ void HraciaPlocha::vykresliPlochu() {
 
         for (int j = 0; j < velkost; ++j) {
             if (aktualnaPlocha[i][j] == 1)
-                cout << "[ ]";
+                cout << "[  ]";
             else if (aktualnaPlocha[i][j] == 2 || aktualnaPlocha[i][j] == 3)
-                cout << "( )";
+                cout << "(  )";
 
-            else if (aktualnaPlocha[i][j] == 5)
-                cout << "(C)";
-            else if (aktualnaPlocha[i][j] == 6)
-                cout << "(M)";
-            else if (aktualnaPlocha[i][j] == 7)
-                cout << "(Z)";
-            else if (aktualnaPlocha[i][j] == 8)
-                cout << "(B)";
+            else if (aktualnaPlocha[i][j] > 50 && aktualnaPlocha[i][j] < 60)
+                cout << "(C" << aktualnaPlocha[i][j] % 50 << ")";
+            else if (aktualnaPlocha[i][j] > 60 && aktualnaPlocha[i][j] < 70)
+                cout << "(M" << aktualnaPlocha[i][j] % 60 << ")";
+            else if (aktualnaPlocha[i][j] > 70 && aktualnaPlocha[i][j] < 80)
+                cout << "(Z" << aktualnaPlocha[i][j] % 70 << ")";
+            else if (aktualnaPlocha[i][j] > 80 && aktualnaPlocha[i][j] < 90)
+                cout << "(B" << aktualnaPlocha[i][j] % 80 << ")";
             else
-                cout << "   ";
+                cout << "    ";
         }
         cout << endl;
     }

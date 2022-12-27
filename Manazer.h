@@ -5,7 +5,9 @@
 
 
 class Manazer {
-    HraciaPlocha hp;
+    int pocetHracov;
+    Hrac hraci[4];
+    char farby[4]{'C', 'M', 'Z', 'B'};
     int pocetPripojenychHracov;
 
 public:

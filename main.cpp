@@ -2,6 +2,7 @@
 #include <cstdlib>
 //#include <SDL2/SDL.h>
 #include "HraciaPlocha.h"
+#include "Manazer.h"
 
 using namespace std;
 
@@ -10,12 +11,12 @@ int main(int argc, char* argv[]) {
 
     srand(time(nullptr));
 
-    HraciaPlocha hp = HraciaPlocha();
+    Manazer manazer = Manazer();
     Kocka kocka = Kocka();
 
-    hp.vykresliPlochu();
 
     //hod kockou napisany cez konzolu
+    cout << ">>";
     string hod;
     cin >> hod;
 

@@ -9,6 +9,7 @@ class Figurka {
 private:
     int* poziciaXY;
     char farbaFigurky;
+    int idFigurky;
     bool jeVZakladni; // startovaci domcek
     bool jeNaStartovacejPozicii; // Figurka bola v zakladni a Hrac hodil 6
     bool jeNaHracejPloche; // je na hracej ploche
@@ -25,6 +26,8 @@ public:
     bool getJeNaStartovacejPozicii();
     bool getJeNaHracejPloche();
     bool getJeVDomceku();
+    void setIDFigurky(int cislo);
+    int getIDFigurky();
 
 };
 
