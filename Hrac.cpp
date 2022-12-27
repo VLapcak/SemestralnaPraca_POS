@@ -1,4 +1,7 @@
 #include "Hrac.h"
+#include <iostream>
+
+using namespace std;
 
 Hrac::Hrac() {
     pocetFigurok = 4;
@@ -20,7 +23,7 @@ void Hrac::setFarbu(char farba) {
 }
 
 
-Figurka Hrac::getFigurka(int id) const {
+Figurka Hrac::getFigurka(int id) {
     return figurky[id];
 }
 
@@ -30,22 +33,41 @@ char Hrac::getFarbu() {
 
 void Hrac::vykonajTah() {
 
+    figurky[1].setJeNaStartovacejPozicii(true);
     //if je Hrac na tahu
 
     if (hadze3Krat()) {
         //Hrac hadze maximalne 3x dovtedy kym nehodi 6
         //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
-        for (int pocetHodov = 0; pocetHodov < 3; pocetHodov++) {
-            int cislo = kocka.getCislo();
-            if (cislo == 6) {
+        for (int pocetHodov = 0; pocetHodov < 1; pocetHodov++) {
+
+            hod();
+            /*if (cislo == 6) {
                 //vyloz panacika z domceku
                 //ak je na startovacej pozicii zniz pocetFigurokStartovaciaPozicia
 
+                cout << "Vyber figurku >>";
+                int idFigurky;
+                cin >> idFigurky;
+
+                figurky[idFigurky].setJeNaStartovacejPozicii(true);
+                figurky[idFigurky].setJeVZakladni(false);
+
+                bool dohadzal = false;
+                while (dohadzal)
+                {
+                    cout << "Vyber figurku >>";
+                    int idFigurky;
+                    cin >> idFigurky;
+                }
+                break;
                 //TODO: ak hodi 6 hrac si vyberie, s ktorou figurkou sa pohne
 
                 //TODO: ak hodi 6 hodi znovu
-            }
+            }*/
         }
+
+
     } else {
 
         //Hrac hadze iba 1x
@@ -75,6 +97,41 @@ bool Hrac::hadze3Krat() {
         return true;
     }
     return false;
+}
+
+void Hrac::hod() {
+
+    int cislo = 0;
+    cout << ">>";
+    string hod;
+    cin >> hod;
+    if (hod == "hod") {
+        cislo = kocka.getCislo();
+        cout << "Hodil si: " << cislo << endl;
+    }
+    vyberFigurku();
+
+    while (cislo == 6) {
+
+        cout << ">>";
+        cin >> hod;
+        if (hod == "hod") {
+            cislo = kocka.getCislo();
+            cout << "Hodil si: " << cislo << endl;
+        }
+        vyberFigurku();
+    }
+
+
+}
+
+int Hrac::vyberFigurku() {
+    cout << "Vyber figurku >>";
+    int idFigurky;
+    cin >> idFigurky;
+    figurky[idFigurky-1].setJeNaStartovacejPozicii(true);
+    figurky[idFigurky-1].setJeVZakladni(false);
+    return idFigurky;
 }
 
 

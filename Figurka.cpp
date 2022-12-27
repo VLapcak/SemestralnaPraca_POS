@@ -7,7 +7,7 @@ Figurka::Figurka() {
     farbaFigurky = 'X';
     idFigurky = 0;
     jeVZakladni = true;
-    jeNaStartovacejPozicii = false;
+    naStartovacejPozicii = false;
     jeNaHracejPloche = false;
     jeVDomceku = false;
 
@@ -17,15 +17,14 @@ void Figurka::posunOPolicka(int pocet) {
 
     for (int i = 0; i < pocet; ++i) {
 
-       if (poziciaXY[0] == 4 && poziciaXY[1] <= 4)
-       {
-           poziciaXY[1]--;
-       }
-       else
-           poziciaXY[0]++;
+        if (poziciaXY[0] == 4 && poziciaXY[1] <= 4) {
+            poziciaXY[1]--;
+        } else
+            poziciaXY[0]++;
     }
 }
 
+//setteri
 void Figurka::setFarbu(char farba) {
     farbaFigurky = farba;
 }
@@ -39,6 +38,27 @@ void Figurka::setIDFigurky(int cislo) {
     idFigurky = cislo;
 }
 
+
+void Figurka::setJeNaHracejPloche(bool stav) {
+    jeNaHracejPloche = stav;
+}
+
+
+void Figurka::setJeNaStartovacejPozicii(bool stav) {
+    naStartovacejPozicii = stav;
+}
+
+
+void Figurka::setJeVDomceku(bool stav) {
+    jeVDomceku = stav;
+}
+
+void Figurka::setJeVZakladni(bool stav) {
+    jeVZakladni = stav;
+}
+
+
+//gettere
 int *Figurka::getPoziciu() {
 
     return poziciaXY;
@@ -46,10 +66,6 @@ int *Figurka::getPoziciu() {
 
 bool Figurka::getJeVZakladni() {
     return jeVZakladni;
-}
-
-bool Figurka::getJeNaStartovacejPozicii() {
-    return jeNaStartovacejPozicii;
 }
 
 bool Figurka::getJeNaHracejPloche() {
@@ -63,4 +79,10 @@ bool Figurka::getJeVDomceku() {
 int Figurka::getIDFigurky() {
     return idFigurky;
 }
+
+bool Figurka::getJeNaStartovacejPozicii() {
+    return naStartovacejPozicii;
+}
+
+
 

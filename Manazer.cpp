@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
+#include <windows.h>
 
 using namespace std;
 
@@ -14,6 +15,10 @@ Manazer::Manazer() {
         hraci[i].setFarbu(farby[i]);
     }
     HraciaPlocha hp = *new HraciaPlocha(hraci);
+    hp.vykresliPlochu();
+
+    hraci[0].vykonajTah();
+    //Sleep(5000);
     hp.vykresliPlochu();
 
     // bude sa cakat dovtedy kym pocet pripojenych hracov nebude 4

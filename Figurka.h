@@ -11,7 +11,7 @@ private:
     char farbaFigurky;
     int idFigurky;
     bool jeVZakladni; // startovaci domcek
-    bool jeNaStartovacejPozicii; // Figurka bola v zakladni a Hrac hodil 6
+    bool naStartovacejPozicii; // Figurka bola v zakladni a Hrac hodil 6
     bool jeNaHracejPloche; // je na hracej ploche
     bool jeVDomceku; // presiel celou hracou plochu a dorazil na koncovu poziciu
 
@@ -20,14 +20,20 @@ public:
     Figurka();
     void posunOPolicka(int pocet);
     void setFarbu(char farba);
-    int* getPoziciu();
     void setPoziciu(int x, int y);
+    void setJeNaHracejPloche(bool stav);
+    void setJeNaStartovacejPozicii(bool stav);
+    void setJeVDomceku(bool stav);
+    void setJeVZakladni(bool stav);
+    void setIDFigurky(int cislo);
+
+    int* getPoziciu();
     bool getJeVZakladni();
     bool getJeNaStartovacejPozicii();
     bool getJeNaHracejPloche();
     bool getJeVDomceku();
-    void setIDFigurky(int cislo);
     int getIDFigurky();
+
 
 };
 

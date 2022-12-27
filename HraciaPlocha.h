@@ -31,6 +31,11 @@ private:
                          {9, 10},
                          {10,10}};
 
+    int sBodCerveny[2] {0,4};
+    int sBodZeleny[2] {6,0};
+    int sBodBiely[2] {10,6};
+    int sBodModry[2] {4,10};
+
 
     int zakladnaPlocha[11][11]{{2, 2, 0, 0, 1, 1, 1, 0, 0, 2, 2},
                                {2, 2, 0, 0, 1, 3, 1, 0, 0, 2, 2},
@@ -49,7 +54,7 @@ private:
 
 
 public:
-    HraciaPlocha(Hrac* h);
+    explicit HraciaPlocha(Hrac* h);
     void vykresliPlochu();
     bool getStatus();
 };

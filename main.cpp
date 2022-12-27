@@ -15,14 +15,6 @@ int main(int argc, char* argv[]) {
     Kocka kocka = Kocka();
 
 
-    //hod kockou napisany cez konzolu
-    cout << ">>";
-    string hod;
-    cin >> hod;
-
-    if (hod == "Hod") {
-        cout << "Hodil si: " << kocka.getCislo() << endl;
-    }
 
 
 

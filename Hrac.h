@@ -17,9 +17,11 @@ public:
     Hrac();
     void setFarbu(char farba);
     char getFarbu();
-    Figurka getFigurka(int id) const;
+    Figurka getFigurka(int id);
     bool hadze3Krat();
     void vykonajTah();
+    void hod();
+    int vyberFigurku();
 };
 
 
