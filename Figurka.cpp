@@ -10,17 +10,33 @@ Figurka::Figurka() {
     naStartovacejPozicii = false;
     jeNaHracejPloche = false;
     jeVDomceku = false;
-
+    pocetKrokov = 0;
 }
 
 void Figurka::posunOPolicka(int pocet) {
 
     for (int i = 0; i < pocet; ++i) {
 
-        if (poziciaXY[0] == 4 && poziciaXY[1] <= 4) {
-            poziciaXY[1]--;
-        } else
+        if ((poziciaXY[0] < 4 && poziciaXY[1] == 4) ||
+            (poziciaXY[0] < 6 && poziciaXY[1] == 0) ||
+            ((poziciaXY[0] >= 6) && poziciaXY[1] == 4)) {
             poziciaXY[0]++;
+        } else if ((poziciaXY[0] > 6 && poziciaXY[1] == 6) ||
+                   (poziciaXY[0] <= 6 && poziciaXY[1] == 10) ||
+                   (poziciaXY[0] <= 4 && poziciaXY[1] == 6)) {
+            poziciaXY[0]--;
+        } else if ((poziciaXY[0] == 4 && poziciaXY[1] > 6) ||
+                   (poziciaXY[0] == 0 && poziciaXY[1] <= 6) ||
+                   ((poziciaXY[0] == 4) && poziciaXY[1] <= 4)) {
+            poziciaXY[1]--;
+        } else if ((poziciaXY[0] == 6 && poziciaXY[1] < 4) ||
+                   (poziciaXY[0] == 10 && poziciaXY[1] < 6) ||
+                   ((poziciaXY[0] == 6) && poziciaXY[1] >= 6)) {
+            poziciaXY[1]++;
+        }
+        pocetKrokov += pocet;
+
+        //TODO po kazdom pohybe figurky manazer vykresli hraciu plochu
     }
 }
 
@@ -82,6 +98,21 @@ int Figurka::getIDFigurky() {
 
 bool Figurka::getJeNaStartovacejPozicii() {
     return naStartovacejPozicii;
+}
+
+int *Figurka::getStartovaciePozicie(char farba) {
+    switch (farba) {
+        case 'C':
+            return startovaciePozicie[0];
+        case 'Z':
+            return startovaciePozicie[1];
+        case 'B':
+            return startovaciePozicie[2];
+        case 'M':
+            return startovaciePozicie[3];
+        default:
+            return nullptr;
+    }
 }
 
 

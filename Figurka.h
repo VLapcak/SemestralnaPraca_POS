@@ -14,7 +14,8 @@ private:
     bool naStartovacejPozicii; // Figurka bola v zakladni a Hrac hodil 6
     bool jeNaHracejPloche; // je na hracej ploche
     bool jeVDomceku; // presiel celou hracou plochu a dorazil na koncovu poziciu
-
+    int startovaciePozicie[4][2] { {0,4}, {6,0}, {10,6}, {4,10} }; // startovacia pozicia figurky na zaklade farby a indexu
+    int pocetKrokov; // kolko policok presla figurka na hracej ploche
 
 public:
     Figurka();
@@ -33,6 +34,7 @@ public:
     bool getJeNaHracejPloche();
     bool getJeVDomceku();
     int getIDFigurky();
+    int* getStartovaciePozicie(char farba);
 
 
 };

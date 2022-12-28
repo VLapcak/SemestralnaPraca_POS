@@ -36,60 +36,53 @@ void Hrac::vykonajTah() {
     figurky[1].setJeNaStartovacejPozicii(true);
     //if je Hrac na tahu
 
-    if (hadze3Krat()) {
+    int cislo = 0;
+    int idFigurky = 0;
+    if (hracoveFigurkySuVDomcekuAleboVZakladni()) {
         //Hrac hadze maximalne 3x dovtedy kym nehodi 6
         //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
         for (int pocetHodov = 0; pocetHodov < 1; pocetHodov++) {
 
-            hod();
-            /*if (cislo == 6) {
-                //vyloz panacika z domceku
-                //ak je na startovacej pozicii zniz pocetFigurokStartovaciaPozicia
+                cislo = hod();
+                while (cislo == 6) {
+                    idFigurky = vyberFigurku();
+                    // posun zo zakladne na startovaciu poziciu
+                    if (hracoveFigurkySuVDomcekuAleboVZakladni()) {
+                        figurky[idFigurky - 1].setPoziciu(figurky[idFigurky - 1].getStartovaciePozicie(farbaHraca)[0],figurky[idFigurky - 1].getStartovaciePozicie(farbaHraca)[1]);
+                        figurky[idFigurky - 1].setJeNaStartovacejPozicii(true);
+                        figurky[idFigurky - 1].setJeVZakladni(false);
+                    } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii()) {
 
-                cout << "Vyber figurku >>";
-                int idFigurky;
-                cin >> idFigurky;
+                    }
 
-                figurky[idFigurky].setJeNaStartovacejPozicii(true);
-                figurky[idFigurky].setJeVZakladni(false);
-
-                bool dohadzal = false;
-                while (dohadzal)
-                {
-                    cout << "Vyber figurku >>";
-                    int idFigurky;
-                    cin >> idFigurky;
+                    cislo = hod();
                 }
-                break;
-                //TODO: ak hodi 6 hrac si vyberie, s ktorou figurkou sa pohne
+                idFigurky = vyberFigurku();
 
-                //TODO: ak hodi 6 hodi znovu
-            }*/
+                break;
         }
 
 
     } else {
 
-        //Hrac hadze iba 1x
+        cislo = hod();
 
-        int cislo = kocka.getCislo();
-        if (cislo == 6) {
 
-            //TODO: ak hodi 6 Hrac si vyberie, s ktorou figurkou sa pohne
+        //TODO: ak hodi 6 Hrac si vyberie, s ktorou figurkou sa pohne
 
-            //TODO: ak hodi 6 hodi znovu
+        //TODO: ak hodi 6 hodi znovu
 
-        } else {
+    } /*else {
 
             //TODO: vyberie, s ktorou figurkou sa pohne
 
-        }
-
-    }
+        }*/
 
 }
 
-bool Hrac::hadze3Krat() {
+
+
+bool Hrac::hracoveFigurkySuVDomcekuAleboVZakladni() {
     if ((getFigurka(0).getJeVZakladni() || getFigurka(0).getJeVDomceku()) &&
         (getFigurka(1).getJeVZakladni() || getFigurka(1).getJeVDomceku()) &&
         (getFigurka(2).getJeVZakladni() || getFigurka(2).getJeVDomceku()) &&
@@ -99,7 +92,7 @@ bool Hrac::hadze3Krat() {
     return false;
 }
 
-void Hrac::hod() {
+/*void Hrac::hod() {
 
     int cislo = 0;
     cout << ">>";
@@ -109,7 +102,9 @@ void Hrac::hod() {
         cislo = kocka.getCislo();
         cout << "Hodil si: " << cislo << endl;
     }
-    vyberFigurku();
+    int idFigurky = vyberFigurku();
+    // pohni figurkou o cislo
+
 
     while (cislo == 6) {
 
@@ -123,15 +118,33 @@ void Hrac::hod() {
     }
 
 
+}*/
+
+int Hrac::hod() {
+    int cislo = 0;
+    cout << ">>";
+    string hod;
+    cin >> hod;
+    if (hod == "hod") {
+        cislo = kocka.getCislo();
+        cout << "Hodil si: " << cislo << endl;
+    }
+    return cislo;
 }
 
-int Hrac::vyberFigurku() {
+/*int Hrac::vyberFigurku() {
     cout << "Vyber figurku >>";
     int idFigurky;
     cin >> idFigurky;
     figurky[idFigurky-1].setJeNaStartovacejPozicii(true);
     figurky[idFigurky-1].setJeVZakladni(false);
     return idFigurky;
-}
+}*/
 
+int Hrac::vyberFigurku() {
+    cout << "Vyber figurku >>";
+    int idFigurky;
+    cin >> idFigurky;
+    return idFigurky;
+}
 

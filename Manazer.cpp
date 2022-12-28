@@ -17,10 +17,10 @@ Manazer::Manazer() {
     HraciaPlocha hp = *new HraciaPlocha(hraci);
     hp.setZakladnaPlocha();
     hp.vykresliPlochu();
-
-    hraci[0].vykonajTah();
-    //Sleep(5000);
-    hp.vykresliPlochu();
+    for (int i = 0; i < 10; ++i) {
+        hraci[0].vykonajTah();
+        hp.vykresliPlochu();
+    }
 
     // bude sa cakat dovtedy kym pocet pripojenych hracov nebude 4
     /*pthread_mutex_lock()

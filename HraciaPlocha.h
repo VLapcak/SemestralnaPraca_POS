@@ -57,7 +57,6 @@ public:
     explicit HraciaPlocha(Hrac* h);
     void setZakladnaPlocha();
     void vykresliPlochu();
-    void prekonvertuj();
     bool getStatus();
 
 };

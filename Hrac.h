@@ -18,9 +18,9 @@ public:
     void setFarbu(char farba);
     char getFarbu();
     Figurka getFigurka(int id);
-    bool hadze3Krat();
+    bool hracoveFigurkySuVDomcekuAleboVZakladni();
     void vykonajTah();
-    void hod();
+    int hod();
     int vyberFigurku();
 };
 

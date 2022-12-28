@@ -32,33 +32,23 @@ void HraciaPlocha::vykresliPlochu() {
             Figurka figurka = hr.getFigurka(j);
             switch (hr.getFarbu()) {
                 case 'C':
-                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] =
-                            5 * 10 + hr.getFigurka(j).getIDFigurky();
+                    aktualnaPlocha[figurka.getPoziciu()[0]][figurka.getPoziciu()[1]] = 5 * 10 + figurka.getIDFigurky();
                     break;
                 case 'M':
-                    //hr.getFigurka(j).setPoziciu(zBodyModry[j][0], zBodyModry[j][1]);
-                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] =
-                            6 * 10 + hr.getFigurka(j).getIDFigurky();
+                    aktualnaPlocha[figurka.getPoziciu()[0]][figurka.getPoziciu()[1]] = 6 * 10 + figurka.getIDFigurky();
                     break;
                 case 'Z':
-                    //hr.getFigurka(j).setPoziciu(zBodyZeleny[j][0], zBodyZeleny[j][1]);
-                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] =
-                            7 * 10 + hr.getFigurka(j).getIDFigurky();
+                    aktualnaPlocha[figurka.getPoziciu()[0]][figurka.getPoziciu()[1]] = 7 * 10 + figurka.getIDFigurky();
                     break;
                 case 'B':
-                    //hr.getFigurka(j).setPoziciu(zBodyBiely[j][0], zBodyBiely[j][1]);
-                    aktualnaPlocha[hr.getFigurka(j).getPoziciu()[0]][hr.getFigurka(j).getPoziciu()[1]] =
-                            8 * 10 + hr.getFigurka(j).getIDFigurky();
+                    aktualnaPlocha[figurka.getPoziciu()[0]][figurka.getPoziciu()[1]] = 8 * 10 + figurka.getIDFigurky();
                     break;
             }
         }
     }
     cout << endl;
-    prekonvertuj();
-}
 
-//// funkcia prekonvertuje cisla pola na textovy format
-void HraciaPlocha::prekonvertuj() {
+    // vypise textovy format cisel v poli reprezentujucich figurky a policka
     for (int i = 0; i < velkost; ++i) {
 
         for (int j = 0; j < velkost; ++j) {
@@ -94,16 +84,16 @@ void HraciaPlocha::setZakladnaPlocha() {
             Figurka figurka = hr.getFigurka(j);
             switch (hr.getFarbu()) {
                 case 'C':
-                    hr.getFigurka(j).setPoziciu(zBodyCerveny[j][0], zBodyCerveny[j][1]);
+                    figurka.setPoziciu(zBodyCerveny[j][0], zBodyCerveny[j][1]);
                     break;
                 case 'M':
-                    hr.getFigurka(j).setPoziciu(zBodyModry[j][0], zBodyModry[j][1]);
+                    figurka.setPoziciu(zBodyModry[j][0], zBodyModry[j][1]);
                     break;
                 case 'Z':
-                    hr.getFigurka(j).setPoziciu(zBodyZeleny[j][0], zBodyZeleny[j][1]);
+                    figurka.setPoziciu(zBodyZeleny[j][0], zBodyZeleny[j][1]);
                     break;
                 case 'B':
-                    hr.getFigurka(j).setPoziciu(zBodyBiely[j][0], zBodyBiely[j][1]);
+                    figurka.setPoziciu(zBodyBiely[j][0], zBodyBiely[j][1]);
                     break;
             }
         }
