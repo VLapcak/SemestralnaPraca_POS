@@ -33,7 +33,7 @@ char Hrac::getFarbu() {
 
 void Hrac::vykonajTah() {
 
-    figurky[1].setJeNaStartovacejPozicii(true);
+    //figurky[1].setJeNaStartovacejPozicii(true);
     //if je Hrac na tahu
 
     int cislo = 0;
@@ -41,32 +41,39 @@ void Hrac::vykonajTah() {
     if (hracoveFigurkySuVDomcekuAleboVZakladni()) {
         //Hrac hadze maximalne 3x dovtedy kym nehodi 6
         //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
-        for (int pocetHodov = 0; pocetHodov < 1; pocetHodov++) {
+        int pocetHodov = 3;
+        while (pocetHodov > 0) {
 
                 cislo = hod();
                 while (cislo == 6) {
                     idFigurky = vyberFigurku();
                     // posun zo zakladne na startovaciu poziciu
-                    if (hracoveFigurkySuVDomcekuAleboVZakladni()) {
+                    if (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
                         figurky[idFigurky - 1].setPoziciu(figurky[idFigurky - 1].getStartovaciePozicie(farbaHraca)[0],figurky[idFigurky - 1].getStartovaciePozicie(farbaHraca)[1]);
                         figurky[idFigurky - 1].setJeNaStartovacejPozicii(true);
                         figurky[idFigurky - 1].setJeVZakladni(false);
-                    } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii()) {
-
+                        cislo = hod();
+                    }
+                    else {
+                        figurky[idFigurky - 1].posunOPolicka(cislo);
                     }
 
-                    cislo = hod();
-                }
-                idFigurky = vyberFigurku();
 
-                break;
+                    pocetHodov = 0;
+                }
+                //idFigurky = vyberFigurku();
+                //figurky[idFigurky - 1].posunOPolicka(cislo);
+
+                pocetHodov--;
+                //break;
         }
 
 
     } else {
 
         cislo = hod();
-
+        idFigurky = vyberFigurku();
+        figurky[idFigurky - 1].posunOPolicka(cislo);
 
         //TODO: ak hodi 6 Hrac si vyberie, s ktorou figurkou sa pohne
 
@@ -83,10 +90,10 @@ void Hrac::vykonajTah() {
 
 
 bool Hrac::hracoveFigurkySuVDomcekuAleboVZakladni() {
-    if ((getFigurka(0).getJeVZakladni() || getFigurka(0).getJeVDomceku()) &&
-        (getFigurka(1).getJeVZakladni() || getFigurka(1).getJeVDomceku()) &&
-        (getFigurka(2).getJeVZakladni() || getFigurka(2).getJeVDomceku()) &&
-        (getFigurka(3).getJeVZakladni() || getFigurka(3).getJeVDomceku())) {
+    if ((figurky[0].getJeVZakladni() || figurky[0].getJeVDomceku()) &&
+        (figurky[1].getJeVZakladni() || figurky[1].getJeVDomceku()) &&
+        (figurky[2].getJeVZakladni() || figurky[2].getJeVDomceku()) &&
+        (figurky[3].getJeVZakladni() || figurky[3].getJeVDomceku())) {
         return true;
     }
     return false;

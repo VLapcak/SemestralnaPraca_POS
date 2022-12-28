@@ -19,21 +19,22 @@ void Figurka::posunOPolicka(int pocet) {
 
         if ((poziciaXY[0] < 4 && poziciaXY[1] == 4) ||
             (poziciaXY[0] < 6 && poziciaXY[1] == 0) ||
-            ((poziciaXY[0] >= 6) && poziciaXY[1] == 4)) {
+            ((poziciaXY[0] >= 6 && poziciaXY[0] < 10) && poziciaXY[1] == 4)) {
             poziciaXY[0]++;
         } else if ((poziciaXY[0] > 6 && poziciaXY[1] == 6) ||
-                   (poziciaXY[0] <= 6 && poziciaXY[1] == 10) ||
-                   (poziciaXY[0] <= 4 && poziciaXY[1] == 6)) {
+                   ((poziciaXY[0] > 4) && poziciaXY[1] == 10) ||
+                    ((poziciaXY[0] <= 4 && poziciaXY[0] > 0) && poziciaXY[1] == 6)) {
             poziciaXY[0]--;
         } else if ((poziciaXY[0] == 4 && poziciaXY[1] > 6) ||
                    (poziciaXY[0] == 0 && poziciaXY[1] <= 6) ||
                    ((poziciaXY[0] == 4) && poziciaXY[1] <= 4)) {
             poziciaXY[1]--;
         } else if ((poziciaXY[0] == 6 && poziciaXY[1] < 4) ||
-                   (poziciaXY[0] == 10 && poziciaXY[1] < 6) ||
+                   (poziciaXY[0] == 10 && poziciaXY[1] <= 6) ||
                    ((poziciaXY[0] == 6) && poziciaXY[1] >= 6)) {
             poziciaXY[1]++;
         }
+        std::cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << std::endl;
         pocetKrokov += pocet;
 
         //TODO po kazdom pohybe figurky manazer vykresli hraciu plochu
