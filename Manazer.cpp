@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
-#include <windows.h>
+//#include <windows.h>
 
 using namespace std;
 
@@ -15,6 +15,7 @@ Manazer::Manazer() {
         hraci[i].setFarbu(farby[i]);
     }
     HraciaPlocha hp = *new HraciaPlocha(hraci);
+    hp.setZakladnaPlocha();
     hp.vykresliPlochu();
 
     hraci[0].vykonajTah();
