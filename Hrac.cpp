@@ -33,15 +33,13 @@ char Hrac::getFarbu() {
 }
 
 void Hrac::vykonajTah() {
-
     int cislo = 0;
     int idFigurky = 0;
-    if (suFigurkyNaHP()) {
+    if (!suFigurkyNaHP()) {
         //Hrac hadze maximalne 3x dovtedy kym nehodi 6
         //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
         int pocetHodov = 3;
         while (pocetHodov > 0) {
-
             cislo = hod();
             while (cislo == 6) {
                 idFigurky = vyberFigurku();
@@ -56,52 +54,43 @@ void Hrac::vykonajTah() {
                     figurky[idFigurky - 1].posunOPolicka(cislo);
                     figurky[idFigurky - 1].setJeNaStartovacejPozicii(false);
                 }
-
-
                 pocetHodov = 0;
             }
-            //idFigurky = vyberFigurku();
-            //figurky[idFigurky - 1].posunOPolicka(cislo);
-
             pocetHodov--;
-            //break;
         }
-
-
     } else {
-
         cislo = hod();
         idFigurky = vyberFigurku();
-        figurky[idFigurky - 1].posunOPolicka(cislo);
+        if (cislo != 6) {
+            while (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                cout << "<Figurka nie je na hracej ploche!> ";
+                idFigurky = vyberFigurku();
+            }
+            figurky[idFigurky - 1].posunOPolicka(cislo);
+        } else if (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
+            figurky[idFigurky - 1].setNaStartovaciuPoziciu();
+            figurky[idFigurky - 1].setJeNaHracejPloche(true);
+            figurky[idFigurky - 1].setJeVZakladni(false);
+        }
         while (cislo == 6) {
             cislo = hod();
             idFigurky = vyberFigurku();
-
-            if (figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                figurky[idFigurky - 1].posunOPolicka(cislo);
-                figurky[idFigurky - 1].setJeNaHracejPloche(false);
-            }
+            figurky[idFigurky - 1].posunOPolicka(cislo);
         }
-
-        //TODO: ak hodi 6 Hrac si vyberie, s ktorou figurkou sa pohne
-
-        //TODO: ak hodi 6 hodi znovu
-
     }
 }
 
 bool Hrac::suFigurkyNaHP() {
-    int pocetFigurokNieNaHracejPloche = 0;
+    int pocetFigurokNaHracejPloche = 0;
     for (int i = 0; i < pocetFigurok; ++i) {
         if (figurky[i].getJeNaHracejPloche()) {
-            pocetFigurokNieNaHracejPloche++;
+            pocetFigurokNaHracejPloche++;
         }
     }
-    if (pocetFigurokNieNaHracejPloche > 0) {
-        return false;
+    if (pocetFigurokNaHracejPloche > 0) {
+        return true;
     }
-
-    return true;
+    return false;
 }
 
 int Hrac::hod() {
@@ -140,6 +129,8 @@ bool Hrac::jeMoznePohnutFigurku(int id) {
         return true;
     else if (figurky[id - 1].getJeVDomceku() || figurky[id - 1].getJeVZakladni())
         return false;
+
+    return false;
 }
 
 
