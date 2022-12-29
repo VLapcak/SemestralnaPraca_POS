@@ -73,9 +73,12 @@ void Hrac::vykonajTah() {
             figurky[idFigurky - 1].setJeVZakladni(false);
         }
         while (cislo == 6) {
-            cislo = hod();
-            idFigurky = vyberFigurku();
             figurky[idFigurky - 1].posunOPolicka(cislo);
+            cislo = hod();
+            if (cislo != 6) {
+                idFigurky = vyberFigurku();
+                figurky[idFigurky - 1].posunOPolicka(cislo);
+            }
         }
     }
 }
@@ -90,6 +93,7 @@ bool Hrac::suFigurkyNaHP() {
     if (pocetFigurokNaHracejPloche > 0) {
         return true;
     }
+
     return false;
 }
 
