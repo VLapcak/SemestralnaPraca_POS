@@ -7,12 +7,15 @@
 class Manazer {
     int pocetHracov;
     Hrac hraci[4];
-    char farby[4]{'C', 'M', 'Z', 'B'};
+    char farby[4]{'C', 'M', 'B', 'Z'};
+    int idAktualnehoHraca;
     int pocetPripojenychHracov;
 
 public:
     Manazer();
-    char naTahuJeHrac();
+    void dalsiHrac();
+    void beziHra();
+    void vyberNahodnehoZacinajuceho();
 };
 
 

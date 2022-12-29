@@ -15,27 +15,37 @@ Figurka::Figurka() {
 
 void Figurka::posunOPolicka(int pocet) {
 
-    for (int i = 0; i < pocet; ++i) {
+    if ((pocetKrokov + pocet) > 44) {
+        std::cout << "Figurka " << farbaFigurky << idFigurky << " sa nemôže sa pohnúť do domceka.";
 
-        if ((poziciaXY[0] < 4 && poziciaXY[1] == 4) ||
-            (poziciaXY[0] < 6 && poziciaXY[1] == 0) ||
-            ((poziciaXY[0] >= 6 && poziciaXY[0] < 10) && poziciaXY[1] == 4)) {
-            poziciaXY[0]++;
-        } else if ((poziciaXY[0] > 6 && poziciaXY[1] == 6) ||
-                   ((poziciaXY[0] > 4) && poziciaXY[1] == 10) ||
-                    ((poziciaXY[0] <= 4 && poziciaXY[0] > 0) && poziciaXY[1] == 6)) {
-            poziciaXY[0]--;
-        } else if ((poziciaXY[0] == 4 && poziciaXY[1] > 6) ||
-                   (poziciaXY[0] == 0 && poziciaXY[1] <= 6) ||
-                   ((poziciaXY[0] == 4) && poziciaXY[1] <= 4)) {
-            poziciaXY[1]--;
-        } else if ((poziciaXY[0] == 6 && poziciaXY[1] < 4) ||
-                   (poziciaXY[0] == 10 && poziciaXY[1] <= 6) ||
-                   ((poziciaXY[0] == 6) && poziciaXY[1] >= 6)) {
-            poziciaXY[1]++;
+    } else {
+        for (int i = 0; i < pocet; ++i) {
+            if (pocetKrokov < 40) {
+
+                if ((poziciaXY[0] < 4 && poziciaXY[1] == 4) ||
+                    (poziciaXY[0] < 6 && poziciaXY[1] == 0) ||
+                    ((poziciaXY[0] >= 6 && poziciaXY[0] < 10) && poziciaXY[1] == 4)) {
+                    poziciaXY[0]++;
+                } else if ((poziciaXY[0] > 6 && poziciaXY[1] == 6) ||
+                           ((poziciaXY[0] > 4) && poziciaXY[1] == 10) ||
+                           ((poziciaXY[0] <= 4 && poziciaXY[0] > 0) && poziciaXY[1] == 6)) {
+                    poziciaXY[0]--;
+                } else if ((poziciaXY[0] == 4 && poziciaXY[1] > 6) ||
+                           (poziciaXY[0] == 0 && poziciaXY[1] <= 6) ||
+                           ((poziciaXY[0] == 4) && poziciaXY[1] <= 4)) {
+                    poziciaXY[1]--;
+                } else if ((poziciaXY[0] == 6 && poziciaXY[1] < 4) ||
+                           (poziciaXY[0] == 10 && poziciaXY[1] <= 6) ||
+                           ((poziciaXY[0] == 6) && poziciaXY[1] >= 6)) {
+                    poziciaXY[1]++;
+                }
+                std::cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << " -> ";
+                pocetKrokov++;
+            } else {
+
+                jeVDomceku = true;
+            }
         }
-        std::cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << std::endl;
-        pocetKrokov += pocet;
 
         //TODO po kazdom pohybe figurky manazer vykresli hraciu plochu
     }
@@ -75,6 +85,32 @@ void Figurka::setJeVZakladni(bool stav) {
 }
 
 
+void Figurka::setNaStartovaciuPoziciu() {
+
+    naStartovacejPozicii = true;
+    switch (farbaFigurky) {
+        case 'C':
+            poziciaXY[0] = startovaciePozicie[0][0];
+            poziciaXY[1] = startovaciePozicie[0][1];
+            break;
+        case 'Z':
+            poziciaXY[0] = startovaciePozicie[1][0];
+            poziciaXY[1] = startovaciePozicie[1][1];
+            break;
+        case 'B':
+            poziciaXY[0] = startovaciePozicie[2][0];
+            poziciaXY[1] = startovaciePozicie[2][1];
+            break;
+        case 'M':
+            poziciaXY[0] = startovaciePozicie[3][0];
+            poziciaXY[1] = startovaciePozicie[3][1];
+            break;
+        default:
+            break;
+    }
+}
+
+
 //gettere
 int *Figurka::getPoziciu() {
 
@@ -101,20 +137,6 @@ bool Figurka::getJeNaStartovacejPozicii() {
     return naStartovacejPozicii;
 }
 
-int *Figurka::getStartovaciePozicie(char farba) {
-    switch (farba) {
-        case 'C':
-            return startovaciePozicie[0];
-        case 'Z':
-            return startovaciePozicie[1];
-        case 'B':
-            return startovaciePozicie[2];
-        case 'M':
-            return startovaciePozicie[3];
-        default:
-            return nullptr;
-    }
-}
 
 
 

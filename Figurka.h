@@ -27,6 +27,7 @@ public:
     void setJeVDomceku(bool stav);
     void setJeVZakladni(bool stav);
     void setIDFigurky(int cislo);
+    void setNaStartovaciuPoziciu();
 
     int* getPoziciu();
     bool getJeVZakladni();
@@ -34,8 +35,6 @@ public:
     bool getJeNaHracejPloche();
     bool getJeVDomceku();
     int getIDFigurky();
-    int* getStartovaciePozicie(char farba);
-
 
 };
 
