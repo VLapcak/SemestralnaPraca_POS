@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
-#include <windows.h>
 
 using namespace std;
 
@@ -19,14 +18,22 @@ Manazer::Manazer() {
     hp.setZakladnaPlocha();
     hp.vykresliPlochu();
 
-    vyberNahodnehoZacinajuceho();
+    ////Pre test viacerych hracov - NEMAZAT!!!
+    /*vyberNahodnehoZacinajuceho();
     cout << "Na rade je " << hraci[idAktualnehoHraca].getFarbu() << " hrac ";
     for (int i = 0; i < 20; ++i) {
-
         hraci[idAktualnehoHraca].vykonajTah();
         hp.vykresliPlochu();
         dalsiHrac();
+    }*/
+
+    ////Pre test jedneho hraca
+    for (int i = 0; i < 20; ++i) {
+        hraci[0].vykonajTah();
+        hp.vykresliPlochu();
     }
+
+
 
     // bude sa cakat dovtedy kym pocet pripojenych hracov nebude 4
     /*pthread_mutex_lock()

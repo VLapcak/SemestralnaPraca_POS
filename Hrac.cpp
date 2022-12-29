@@ -75,8 +75,12 @@ void Hrac::vykonajTah() {
         while (cislo == 6) {
             figurky[idFigurky - 1].posunOPolicka(cislo);
             cislo = hod();
+            idFigurky = vyberFigurku();
             if (cislo != 6) {
-                idFigurky = vyberFigurku();
+                while (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                    cout << "<Figurka nie je na hracej ploche!> ";
+                    idFigurky = vyberFigurku();
+                }
                 figurky[idFigurky - 1].posunOPolicka(cislo);
             }
         }
