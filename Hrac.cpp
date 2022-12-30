@@ -67,23 +67,44 @@ void Hrac::vykonajTah() {
                 idFigurky = vyberFigurku();
             }
             figurky[idFigurky - 1].posunOPolicka(cislo);
-        } else if (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
+        } else {
+            while (cislo == 6) {
+                if (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                    figurky[idFigurky - 1].setNaStartovaciuPoziciu();
+                    figurky[idFigurky - 1].setJeNaHracejPloche(true);
+                    figurky[idFigurky - 1].setJeVZakladni(false);
+                } else {
+                    figurky[idFigurky - 1].posunOPolicka(cislo);
+                }
+                cislo = hod();
+                idFigurky = vyberFigurku();
+                if (cislo != 6) {
+                    while (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                        cout << "<Figurka nie je na hracej ploche!> ";
+                        idFigurky = vyberFigurku();
+                    }
+                    figurky[idFigurky - 1].posunOPolicka(cislo);
+                }
+            }
+        }
+        /*else if (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
             figurky[idFigurky - 1].setNaStartovaciuPoziciu();
             figurky[idFigurky - 1].setJeNaHracejPloche(true);
             figurky[idFigurky - 1].setJeVZakladni(false);
-        }
-        while (cislo == 6) {
-            figurky[idFigurky - 1].posunOPolicka(cislo);
-            cislo = hod();
-            idFigurky = vyberFigurku();
-            if (cislo != 6) {
-                while (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                    cout << "<Figurka nie je na hracej ploche!> ";
-                    idFigurky = vyberFigurku();
-                }
+        } else {
+            while (cislo == 6) {
                 figurky[idFigurky - 1].posunOPolicka(cislo);
+                cislo = hod();
+                idFigurky = vyberFigurku();
+                if (cislo != 6) {
+                    while (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                        cout << "<Figurka nie je na hracej ploche!> ";
+                        idFigurky = vyberFigurku();
+                    }
+                    figurky[idFigurky - 1].posunOPolicka(cislo);
+                }
             }
-        }
+        }*/
     }
 }
 
