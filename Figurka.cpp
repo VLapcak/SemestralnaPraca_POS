@@ -1,6 +1,8 @@
 #include "Figurka.h"
 #include "iostream"
 
+using namespace std;
+
 Figurka::Figurka() {
 
     poziciaXY = new int[2];
@@ -15,8 +17,12 @@ Figurka::Figurka() {
 
 void Figurka::posunOPolicka(int pocet) {
 
+    if (naStartovacejPozicii) {
+        naStartovacejPozicii = false;
+    }
+
     if ((pocetKrokov + pocet) > 44) {
-        std::cout << "Figurka " << farbaFigurky << idFigurky << " sa nemôže sa pohnúť do domceka.";
+        cout << "Figurka " << farbaFigurky << idFigurky << " sa nemôže sa pohnúť do domceka." << endl;
 
     } else {
         for (int i = 0; i < pocet; ++i) {
@@ -39,15 +45,14 @@ void Figurka::posunOPolicka(int pocet) {
                            ((poziciaXY[0] == 6) && poziciaXY[1] >= 6)) {
                     poziciaXY[1]++;
                 }
-                std::cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << " -> ";
+                //TODO Potom odstranit
+                cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << " -> ";
                 pocetKrokov++;
             } else {
 
                 jeVDomceku = true;
             }
         }
-
-        //TODO po kazdom pohybe figurky manazer vykresli hraciu plochu
     }
 }
 
@@ -88,6 +93,8 @@ void Figurka::setJeVZakladni(bool stav) {
 void Figurka::setNaStartovaciuPoziciu() {
 
     naStartovacejPozicii = true;
+    jeNaHracejPloche = true;
+    jeVZakladni = false;
     switch (farbaFigurky) {
         case 'C':
             poziciaXY[0] = startovaciePozicie[0][0];
@@ -113,7 +120,6 @@ void Figurka::setNaStartovaciuPoziciu() {
 
 //gettere
 int *Figurka::getPoziciu() {
-
     return poziciaXY;
 }
 
@@ -137,6 +143,6 @@ bool Figurka::getJeNaStartovacejPozicii() {
     return naStartovacejPozicii;
 }
 
-
-
-
+void Figurka::odpocitajKroky(int pocet) {
+    pocetKrokov -= pocet;
+}

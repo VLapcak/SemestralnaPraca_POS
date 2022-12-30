@@ -5,7 +5,6 @@
 
 class Hrac {
 
-
     int pocetFigurok;
     int pocetFigurokDomcek;
     char farbaHraca;
@@ -23,6 +22,9 @@ public:
     int hod();
     int vyberFigurku();
     bool jeMoznePohnutFigurku(int id);
+    bool overTah(int pocetKrokov, int id);
+
+    int skontrolujPoziciuFigurky(int idFigurky);
 };
 
 

@@ -28,6 +28,7 @@ public:
     void setJeVZakladni(bool stav);
     void setIDFigurky(int cislo);
     void setNaStartovaciuPoziciu();
+    void odpocitajKroky(int pocet);
 
     int* getPoziciu();
     bool getJeVZakladni();

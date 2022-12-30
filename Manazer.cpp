@@ -19,19 +19,19 @@ Manazer::Manazer() {
     hp.vykresliPlochu();
 
     ////Pre test viacerych hracov - NEMAZAT!!!
-    /*vyberNahodnehoZacinajuceho();
-    cout << "Na rade je " << hraci[idAktualnehoHraca].getFarbu() << " hrac ";
-    for (int i = 0; i < 20; ++i) {
+    vyberNahodnehoZacinajuceho();
+    cout << "Na rade je " << hraci[idAktualnehoHraca].getFarbu() << " hrac " << endl;
+    for (int i = 0; i < 100; ++i) {
         hraci[idAktualnehoHraca].vykonajTah();
         hp.vykresliPlochu();
         dalsiHrac();
-    }*/
+    }
 
     ////Pre test jedneho hraca
-    for (int i = 0; i < 20; ++i) {
+    /*for (int i = 0; i < 20; ++i) {
         hraci[0].vykonajTah();
         hp.vykresliPlochu();
-    }
+    }*/
 
 
 
@@ -54,7 +54,7 @@ void Manazer::dalsiHrac() {
     else
         idAktualnehoHraca = 0;
 
-    cout << "Na rade je " << hraci[idAktualnehoHraca].getFarbu() << " hrac ";
+    cout << "Na rade je " << hraci[idAktualnehoHraca].getFarbu() << " hrac " << endl;
 
 }
 
