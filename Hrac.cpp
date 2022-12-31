@@ -91,14 +91,14 @@ void Hrac::vykonajTah() {
         // ak je nejaka figurka na SP tak tam ina nemoze ist
         cislo = hod();
         if (cislo == 6) {
+            idFigurky = vyberFigurku();
             while (cislo == 6) {
-                idFigurky = vyberFigurku();
+                bool validnyTah = false;
 
-                if (figurky[idFigurky - 1].getJeVZakladni()) {
-                    int pocitadlo = 1;
-
-                    while (pocitadlo != 0) {
-                        pocitadlo = 0;
+                while (!validnyTah)
+                {
+                    int pocitadlo = 0;
+                    if (figurky[idFigurky - 1].getJeVZakladni()) {
                         for (int i = 0; i < pocetFigurok; ++i) {
                             if (i != idFigurky - 1) {
                                 if (figurky[i].getJeNaStartovacejPozicii()) {
@@ -110,15 +110,16 @@ void Hrac::vykonajTah() {
                             printf("<S danou figurkou sa nemozno pohnut> \n");
                             idFigurky = vyberFigurku();
                         }
+                        else {
+                            figurky[idFigurky - 1].setNaStartovaciuPoziciu();
+                            validnyTah = true;
+                        }
                     }
-                    if (!figurky[idFigurky - 1].getJeNaStartovacejPozicii())
-                        figurky[idFigurky - 1].setNaStartovaciuPoziciu();
-                    else if (figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                        break;
+                    else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
+                        figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                        overPozicieFigurok(cislo, idFigurky);
+                        validnyTah = true;
                     }
-                } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
-                    figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                    overPozicieFigurok(cislo, idFigurky);
                 }
                 cislo = hod();
             }
