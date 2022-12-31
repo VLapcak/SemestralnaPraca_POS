@@ -42,76 +42,101 @@ void Hrac::vykonajTah() {
             //cislo = hod();
             cislo = 6;
             cout << "HODIL som 6" << endl;
-            while (cislo == 6) {
-                //TODO chyba pri vyberani figurky, ked hrac hodi 2x 6 a nejake cislo -
-                // figurka sa nastavi na startovaciu poziciu a pohne o nejake cislo
-
-                idFigurky = vyberFigurku();
-                // posun zo zakladne na startovaciu poziciu
-                if (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                    while (!overTah(cislo, idFigurky)) {
-                        idFigurky = vyberFigurku();
-                    }
-                    figurky[idFigurky - 1].setNaStartovaciuPoziciu();
-                } else {
-                    while (!overTah(cislo, idFigurky)) {
-                        idFigurky = vyberFigurku();
-                    }
-                    //figurky[idFigurky - 1].posunOPolicka(cislo);
-                }
-                cislo = hod();
-                if (cislo != 6) {
+            if (cislo == 6) {
+                while (cislo == 6) {
                     idFigurky = vyberFigurku();
-                    idFigurky = skontrolujPoziciuFigurky(idFigurky);
-                    while (!overTah(cislo, idFigurky)) {
-                        idFigurky = vyberFigurku();
-                    }
-                    //figurky[idFigurky - 1].posunOPolicka(cislo);
-                }
 
-                pocetHodov = 0;
+
+                    //TODO ak hodi hrac 6 6 5 a s 1. sa pohne na SP a s 2. chce ist na SP
+                    if (figurky[idFigurky - 1].getJeNaStartovacejPozicii()) {
+                        figurky[idFigurky - 1].posunOPolicka(cislo); // sp = false
+
+                    } else {
+
+                        if (figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                            figurky[idFigurky - 1].posunOPolicka(cislo); // sp = false
+
+                        } else {
+                            if (figurky[idFigurky - 1].getJeVZakladni()) {
+                                int pocitadlo = 1;
+                                while (pocitadlo != 0) {
+                                    pocitadlo = 0;
+                                    for (int i = 0; i < pocetFigurok; ++i) {
+                                        if (i != idFigurky - 1) {
+                                            if (figurky[i].getJeNaStartovacejPozicii()) {
+                                                pocitadlo++;
+                                            }
+                                        }
+                                    }
+                                    if (pocitadlo > 0) {
+                                        printf("<S danou figurkou sa nemozno pohnut> \n");
+                                        idFigurky = vyberFigurku();
+                                    }
+                                }
+                                figurky[idFigurky - 1].setNaStartovaciuPoziciu();// sp = true
+                            }
+
+                        }
+                    }
+                    cislo = hod();
+
+                    pocetHodov = 0;
+                }
+                figurky[idFigurky - 1].posunOPolicka(cislo);
             }
             pocetHodov--;
         }
-    } else {
+    } else { //ak je uz nejaka figurka na hracej ploche
+
+        // ak je nejaka figurka na SP tak tam ina nemoze ist
         cislo = hod();
-        idFigurky = vyberFigurku();
-        if (cislo != 6) {
-            idFigurky = skontrolujPoziciuFigurky(idFigurky);
-            while (!overTah(cislo, idFigurky)) {
-                idFigurky = vyberFigurku();
-            }
-            //figurky[idFigurky - 1].posunOPolicka(cislo);
-        } else {
+        if (cislo == 6) {
             while (cislo == 6) {
-                if (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                    while (!overTah(cislo, idFigurky)) {
-                        idFigurky = vyberFigurku();
+                idFigurky = vyberFigurku();
+
+                if (figurky[idFigurky - 1].getJeVZakladni()) {
+                    int pocitadlo = 1;
+
+                    while (pocitadlo != 0) {
+                        pocitadlo = 0;
+                        for (int i = 0; i < pocetFigurok; ++i) {
+                            if (i != idFigurky - 1) {
+                                if (figurky[i].getJeNaStartovacejPozicii()) {
+                                    pocitadlo++;
+                                }
+                            }
+                        }
+                        if (pocitadlo > 0) {
+                            printf("<S danou figurkou sa nemozno pohnut> \n");
+                            idFigurky = vyberFigurku();
+                        }
                     }
-                    figurky[idFigurky - 1].setNaStartovaciuPoziciu();
-                } else {
-                    while (!overTah(cislo, idFigurky)) {
-                        idFigurky = vyberFigurku();
+                    if (!figurky[idFigurky - 1].getJeNaStartovacejPozicii())
+                        figurky[idFigurky - 1].setNaStartovaciuPoziciu();
+                    else if (figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                        break;
                     }
-                    //figurky[idFigurky - 1].posunOPolicka(cislo);
+                } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
+                    figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                    overPozicieFigurok(cislo, idFigurky);
                 }
                 cislo = hod();
-                idFigurky = vyberFigurku();
-                if (cislo != 6) {
-                    idFigurky = skontrolujPoziciuFigurky(idFigurky);
-                    while (!overTah(cislo, idFigurky)) {
-                        idFigurky = vyberFigurku();
-                    }
-                    //figurky[idFigurky - 1].posunOPolicka(cislo);
-                }
             }
+            idFigurky = vyberFigurku();
+            idFigurky = skontrolujCiJeNaHP(idFigurky);
+            overPozicieFigurok(cislo, idFigurky);
+        } else {
+            idFigurky = vyberFigurku();
+            idFigurky = skontrolujCiJeNaHP(idFigurky);
+            overPozicieFigurok(cislo, idFigurky);
         }
+
     }
 }
 
-int Hrac::skontrolujPoziciuFigurky(int idFigurky) {
+int Hrac::skontrolujCiJeNaHP(int idFigurky) {
     while (!figurky[idFigurky - 1].getJeNaHracejPloche()) {
-        cout << "<Figurka nie je na hracej ploche!> " << endl;
+        printf("<Figurka nie je na hracej ploche!> \n");
         idFigurky = vyberFigurku();
     }
     return idFigurky;
@@ -136,7 +161,7 @@ int Hrac::hod() {
     string hod;
     cin >> hod;
     while (hod != "hod") {
-        cout << "<Nespravny prikaz> " << endl;
+        printf("<Nespravny prikaz> \n");
         cout << ">>";
         cin >> hod;
     }
@@ -170,57 +195,38 @@ bool Hrac::jeMoznePohnutFigurku(int id) {
     return false;
 }
 
-////funkcia pre overenie toho, ci sa moze hrac pohnut s figurkou na zvolene miesto, kontroluje sa, ci sa na zvolenej pozicii nenachadza figurka
-bool Hrac::overTah(int pocetKrokov, int id) {
-    int pocitadlo = 0;
-    int* povodnaPozicia = figurky[id - 1].getPoziciu();
+void Hrac::overPozicieFigurok(int pocetKrokov, int id) {
+    id--;
+    int pocitadlo = 1;
+    int *povodnaPozicia = new int[2];
+    int *ocakavanaPozicia = new int[2];
 
-    if (figurky[id - 1].getJeNaHracejPloche()) {
-        figurky[id - 1].posunOPolicka(pocetKrokov);
-        int* ocakavanaPozicia = figurky[id - 1].getPoziciu();
+    while (pocitadlo != 0) {
+        pocitadlo = 0;
+        povodnaPozicia[0] = figurky[id].getPoziciu()[0];
+        povodnaPozicia[1] = figurky[id].getPoziciu()[1];
+
+        figurky[id].posunOPolicka(pocetKrokov);
+
+        ocakavanaPozicia[0] = figurky[id].getPoziciu()[0];
+        ocakavanaPozicia[1] = figurky[id].getPoziciu()[1];
 
         for (int i = 0; i < pocetFigurok; ++i) {
-            if (i != id - 1) {
-                //if (*ocakavanaPozicia == *figurky[i].getPoziciu()) {
-                if (ocakavanaPozicia[0] == figurky[i].getPoziciu()[0] && ocakavanaPozicia[1] == figurky[i].getPoziciu()[1]) {
-                    cout << i+1 << ".figurka x,y = " << figurky[i].getPoziciu()[0] << "," << figurky[i].getPoziciu()[1] << endl;
-
-                    figurky[id - 1].odpocitajKroky(pocetKrokov);
-                    figurky[id - 1].setPoziciu(povodnaPozicia[0], povodnaPozicia[1]);
+            if (i != id) {
+                if (ocakavanaPozicia[0] == figurky[i].getPoziciu()[0] &&
+                    ocakavanaPozicia[1] == figurky[i].getPoziciu()[1]) {
+                    figurky[id].odpocitajKroky(pocetKrokov);
+                    figurky[id].setPoziciu(povodnaPozicia[0], povodnaPozicia[1]);
                     pocitadlo++;
                 }
-                cout << i+1 << ".FIGURKA x,y = " << figurky[i].getPoziciu()[0] << "," << figurky[i].getPoziciu()[1] << endl;
-
             }
         }
-       // delete[] ocakavanaPozicia;
-    } else {
-        for (int i = 0; i < pocetFigurok; ++i) {
-            if (i != id - 1) {
-                if (figurky[i].getJeNaStartovacejPozicii()) {
-                    pocitadlo++;
-                    figurky[id - 1].setPoziciu(povodnaPozicia[0], povodnaPozicia[1]);
-                }
-            } else {
-                //TODO ak je na startovacej pozicii a ocakavana sa rovna pozicii figutky tak pocitadlo++ a nastav povodnu poziciu
-                /*if (figurky[id - 1].getJeNaStartovacejPozicii() &&
-                    ocakavanaPozicia[0] == figurky[i].getPoziciu()[0] && ocakavanaPozicia[1] == figurky[i].getPoziciu()[1] ) {
-                    pocitadlo++;
-                    figurky[id - 1].setPoziciu(povodnaPozicia[0], povodnaPozicia[1]);
-                }*/
-            }
+        if (pocitadlo > 0) {
+            printf("<S danou figurkou sa nemozno pohnut> \n");
+            id = vyberFigurku();
+            id = skontrolujCiJeNaHP(id) - 1;
         }
     }
-
-    //delete[] povodnaPozicia;
-
-    if (pocitadlo >= 1) {
-        cout << "<S danou figurkou sa nemozno pohnut!>" << endl;
-        cout << "POCITADLO = " << pocitadlo << endl;
-        return false;
-    }
-
-    return true;
 }
 
 

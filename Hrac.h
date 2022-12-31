@@ -22,9 +22,9 @@ public:
     int hod();
     int vyberFigurku();
     bool jeMoznePohnutFigurku(int id);
-    bool overTah(int pocetKrokov, int id);
+    void overPozicieFigurok(int pocetKrokov, int id);
 
-    int skontrolujPoziciuFigurky(int idFigurky);
+    int skontrolujCiJeNaHP(int idFigurky);
 };
 
 
