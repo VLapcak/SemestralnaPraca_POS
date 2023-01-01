@@ -6,9 +6,10 @@
       <paths name="pos_2022 (d1c1f633-3dd5-415f-99e5-8f3fb164ca98)">
         <serverdata>
           <mappings>
-            <mapping deploy="/tmp/tmp.INHpxQ8UuJ" local="$PROJECT_DIR$" />
+            <mapping deploy="/home/lapcak/SemestralnaPraca" local="$PROJECT_DIR$" />
           </mappings>
           <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
             <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
           </excludedPaths>
         </serverdata>

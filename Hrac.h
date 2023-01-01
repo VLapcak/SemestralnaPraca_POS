@@ -21,7 +21,6 @@ public:
     void vykonajTah();
     int hod();
     int vyberFigurku();
-    bool jeMoznePohnutFigurku(int id);
     void overPozicieFigurok(int pocetKrokov, int id);
 
     int skontrolujCiJeNaHP(int idFigurky);

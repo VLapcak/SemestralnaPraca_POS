@@ -20,7 +20,7 @@ Manazer::Manazer() {
 
     ////Pre test viacerych hracov - NEMAZAT!!!
     vyberNahodnehoZacinajuceho();
-    cout << "Na rade je " << hraci[idAktualnehoHraca].getFarbu() << " hrac " << endl;
+    printf("%s %c %s", "Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac \n");
     for (int i = 0; i < 100; ++i) {
         hraci[idAktualnehoHraca].vykonajTah();
         hp.vykresliPlochu();
@@ -54,7 +54,7 @@ void Manazer::dalsiHrac() {
     else
         idAktualnehoHraca = 0;
 
-    cout << "Na rade je " << hraci[idAktualnehoHraca].getFarbu() << " hrac " << endl;
+    printf("%s %c %s", "Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac \n");
 
 }
 

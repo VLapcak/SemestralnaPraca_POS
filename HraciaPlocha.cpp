@@ -1,15 +1,11 @@
 #include "HraciaPlocha.h"
 #include "Hrac.h"
 #include <iostream>
-#include <cstdlib>
-#include <cstdio>
 
 using namespace std;
 
 
 HraciaPlocha::HraciaPlocha(Hrac *h) {
-    velkost = 11;
-
     for (int i = 0; i < 4; ++i) {
         hraci[i] = h[i];
     }
@@ -53,22 +49,22 @@ void HraciaPlocha::vykresliPlochu() {
 
         for (int j = 0; j < velkost; ++j) {
             if (aktualnaPlocha[j][i] == 1)
-                cout << "[  ]";
+                printf("%s", "[  ]");
             else if (aktualnaPlocha[j][i] == 2 || aktualnaPlocha[j][i] == 3)
-                cout << "(  )";
+                printf("%s", "(  )");
 
             else if (aktualnaPlocha[j][i] > 50 && aktualnaPlocha[j][i] < 60)
-                cout << "(C" << aktualnaPlocha[j][i] % 50 << ")";
+                printf("%s%d%s", "(C", aktualnaPlocha[j][i] % 50, ")");
             else if (aktualnaPlocha[j][i] > 60 && aktualnaPlocha[j][i] < 70)
-                cout << "(M" << aktualnaPlocha[j][i] % 60 << ")";
+                printf("%s%d%s", "(M", aktualnaPlocha[j][i] % 60, ")");
             else if (aktualnaPlocha[j][i] > 70 && aktualnaPlocha[j][i] < 80)
-                cout << "(Z" << aktualnaPlocha[j][i] % 70 << ")";
+                printf("%s%d%s", "(Z", aktualnaPlocha[j][i] % 70, ")");
             else if (aktualnaPlocha[j][i] > 80 && aktualnaPlocha[j][i] < 90)
-                cout << "(B" << aktualnaPlocha[j][i] % 80 << ")";
+                printf("%s%d%s", "(B", aktualnaPlocha[j][i] % 80, ")");
             else
-                cout << "    ";
+                printf("%s", "    ");
         }
-        cout << endl;
+        printf("\n");
     }
 }
 

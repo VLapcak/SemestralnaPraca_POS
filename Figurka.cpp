@@ -21,12 +21,12 @@ void Figurka::posunOPolicka(int pocet) {
         naStartovacejPozicii = false;
     }
 
-    if ((pocetKrokov + pocet) > 44) {
-        cout << "Figurka " << farbaFigurky << idFigurky << " sa nemôže sa pohnúť do domceka." << endl;
+    if ((pocetKrokov + pocet) > 44) {       //po 39 krokoch je figurka pred domcekom (domcek - > 40, 41, 42, 43)
+        printf("%s %c %c %s", "Figurka ", farbaFigurky, idFigurky, " sa nemôže sa pohnúť do domceka.\n");
 
     } else {
         for (int i = 0; i < pocet; ++i) {
-            if (pocetKrokov < 40) {
+            if (pocetKrokov < 39) {
 
                 if ((poziciaXY[0] < 4 && poziciaXY[1] == 4) ||
                     (poziciaXY[0] < 6 && poziciaXY[1] == 0) ||
@@ -50,6 +50,18 @@ void Figurka::posunOPolicka(int pocet) {
                 pocetKrokov++;
             } else {
 
+                switch (farbaFigurky) {
+                    case 'C': poziciaXY[0]++;
+                        break;
+                    case 'M': poziciaXY[1]--;
+                        break;
+                    case 'B': poziciaXY[0]--;
+                        break;
+                    case 'Z': poziciaXY[1]++;
+                        break;
+                }
+                jeNaHracejPloche = false;
+                jeVZakladni = false;
                 jeVDomceku = true;
             }
         }
