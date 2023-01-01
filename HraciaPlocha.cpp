@@ -42,7 +42,7 @@ void HraciaPlocha::vykresliPlochu() {
             }
         }
     }
-    cout << endl;
+    printf("\n");
 
     // vypise textovy format cisel v poli reprezentujucich figurky a policka
     for (int i = 0; i < velkost; ++i) {
@@ -68,9 +68,6 @@ void HraciaPlocha::vykresliPlochu() {
     }
 }
 
-bool HraciaPlocha::getStatus() {
-    return false;
-}
 
 //// funkcia pre nastavenie zakladnej hracej plochy
 void HraciaPlocha::setZakladnaPlocha() {
@@ -93,6 +90,31 @@ void HraciaPlocha::setZakladnaPlocha() {
                     break;
             }
         }
+    }
+}
+
+void HraciaPlocha::setFigurkuNaZakladnu(char farba, int idFigurky) {
+    switch (farba) {
+        case 'C':
+            hraci[0].getFigurka(idFigurky-1).setPoziciu(zBodyCerveny[idFigurky-1][0], zBodyCerveny[idFigurky-1][1]);
+            hraci[0].getFigurka(idFigurky-1).setJeVZakladni(true);
+            break;
+        case 'M':
+            hraci[1].getFigurka(idFigurky-1).setPoziciu(zBodyModry[idFigurky-1][0], zBodyModry[idFigurky-1][1]);
+            hraci[1].getFigurka(idFigurky-1).setJeVZakladni(true);
+            break;
+        case 'Z':
+            hraci[2].getFigurka(idFigurky-1).setPoziciu(zBodyZeleny[idFigurky-1][0], zBodyZeleny[idFigurky-1][1]);
+            hraci[2].getFigurka(idFigurky-1).setJeVZakladni(true);
+            break;
+        case 'B':
+            hraci[3].getFigurka(idFigurky-1).setPoziciu(zBodyBiely[idFigurky-1][0], zBodyBiely[idFigurky-1][1]);
+            hraci[3].getFigurka(idFigurky-1).setJeVZakladni(true);
+            break;
+
+        default:
+            printf("<Error, zle zadana farba>");
+            break;
     }
 }
 

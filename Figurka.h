@@ -22,9 +22,6 @@ public:
     void posunOPolicka(int pocet);
     void setFarbu(char farba);
     void setPoziciu(int x, int y);
-    void setJeNaHracejPloche(bool stav);
-    void setJeNaStartovacejPozicii(bool stav);
-    void setJeVDomceku(bool stav);
     void setJeVZakladni(bool stav);
     void setIDFigurky(int cislo);
     void setNaStartovaciuPoziciu();
@@ -36,6 +33,7 @@ public:
     bool getJeNaHracejPloche();
     bool getJeVDomceku();
     int getIDFigurky();
+    int getPocetKrokov();
 
 };
 

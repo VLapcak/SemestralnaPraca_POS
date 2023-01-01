@@ -34,6 +34,8 @@ char Hrac::getFarbu() {
 void Hrac::vykonajTah() {
     int cislo = 0;
     int idFigurky = 0;
+
+
     if (!suFigurkyNaHP()) {
         //Hrac hadze maximalne 3x dovtedy kym nehodi 6
         //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
@@ -71,7 +73,7 @@ void Hrac::vykonajTah() {
                         }
                         else if (figurky[idFigurky - 1].getJeVDomceku())
                         {
-                            printf("%s", "<Figurka z domceka sa nemoze pohnut> \n");
+                            printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
                             idFigurky = vyberFigurku();
                         }
                     }
@@ -109,10 +111,16 @@ void Hrac::vykonajTah() {
                             figurky[idFigurky - 1].setNaStartovaciuPoziciu();
                             validnyTah = true;
                         }
+
                     } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
                                figurky[idFigurky - 1].getJeNaHracejPloche()) {
                         overPozicieFigurok(cislo, idFigurky);
                         validnyTah = true;
+                    }
+                    else if (figurky[idFigurky - 1].getJeVDomceku())
+                    {
+                        printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
+                        idFigurky = vyberFigurku();
                     }
                 }
                 cislo = hod();
@@ -126,6 +134,13 @@ void Hrac::vykonajTah() {
             overPozicieFigurok(cislo, idFigurky);
         }
 
+    }
+    pocetFigurokDomcek = 0;
+    for (int i = 0; i < pocetFigurok; ++i) {
+        if(figurky[i].getJeVDomceku())
+        {
+            pocetFigurokDomcek++;
+        }
     }
 }
 
@@ -194,6 +209,11 @@ void Hrac::overPozicieFigurok(int pocetKrokov, int id) {
         povodnaPozicia[0] = figurky[id].getPoziciu()[0];
         povodnaPozicia[1] = figurky[id].getPoziciu()[1];
 
+
+        if ((figurky[id].getPocetKrokov() + pocetKrokov) > 43) {       //po 39 krokoch je figurka pred domcekom (domcek - > 40, 41, 42, 43)
+            printf("%s %c %d %s", "Figurka ", farbaHraca, id, " sa nemoze sa pohnut do domceka.\n");
+            pocitadlo++;
+        }
         figurky[id].posunOPolicka(pocetKrokov);
 
         ocakavanaPozicia[0] = figurky[id].getPoziciu()[0];
@@ -228,6 +248,12 @@ void Hrac::overPozicieFigurok(int pocetKrokov, int id) {
         }
     }
 
+}
+
+bool Hrac::getVyhralHru() {
+    if (pocetFigurokDomcek == 4)
+        return true;
+    return false;
 }
 
 

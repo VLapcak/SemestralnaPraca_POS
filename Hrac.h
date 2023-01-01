@@ -5,25 +5,25 @@
 
 class Hrac {
 
+private:
     int pocetFigurok;
     int pocetFigurokDomcek;
     char farbaHraca;
     Figurka figurky[4];
     Kocka kocka;
-
+    int vyberFigurku();
+    int hod();
+    bool suFigurkyNaHP();
+    void overPozicieFigurok(int pocetKrokov, int id);
+    int skontrolujCiJeNaHP(int idFigurky);
 
 public:
     Hrac();
     void setFarbu(char farba);
     char getFarbu();
     Figurka getFigurka(int id);
-    bool suFigurkyNaHP();
     void vykonajTah();
-    int hod();
-    int vyberFigurku();
-    void overPozicieFigurok(int pocetKrokov, int id);
-
-    int skontrolujCiJeNaHP(int idFigurky);
+    bool getVyhralHru();
 };
 
 

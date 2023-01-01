@@ -57,7 +57,7 @@ public:
     explicit HraciaPlocha(Hrac* h);
     void setZakladnaPlocha();
     void vykresliPlochu();
-    bool getStatus();
+    void setFigurkuNaZakladnu(char farba, int idFigurky);
 
 };
 

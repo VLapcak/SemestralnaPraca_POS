@@ -21,51 +21,51 @@ void Figurka::posunOPolicka(int pocet) {
         naStartovacejPozicii = false;
     }
 
-    if ((pocetKrokov + pocet) > 44) {       //po 39 krokoch je figurka pred domcekom (domcek - > 40, 41, 42, 43)
-        printf("%s %c %c %s", "Figurka ", farbaFigurky, idFigurky, " sa nemôže sa pohnúť do domceka.\n");
+    for (int i = 0; i < pocet; ++i) {
+        if (pocetKrokov < 39) {
 
-    } else {
-        for (int i = 0; i < pocet; ++i) {
-            if (pocetKrokov < 39) {
-
-                if ((poziciaXY[0] < 4 && poziciaXY[1] == 4) ||
-                    (poziciaXY[0] < 6 && poziciaXY[1] == 0) ||
-                    ((poziciaXY[0] >= 6 && poziciaXY[0] < 10) && poziciaXY[1] == 4)) {
-                    poziciaXY[0]++;
-                } else if ((poziciaXY[0] > 6 && poziciaXY[1] == 6) ||
-                           ((poziciaXY[0] > 4) && poziciaXY[1] == 10) ||
-                           ((poziciaXY[0] <= 4 && poziciaXY[0] > 0) && poziciaXY[1] == 6)) {
-                    poziciaXY[0]--;
-                } else if ((poziciaXY[0] == 4 && poziciaXY[1] > 6) ||
-                           (poziciaXY[0] == 0 && poziciaXY[1] <= 6) ||
-                           ((poziciaXY[0] == 4) && poziciaXY[1] <= 4)) {
-                    poziciaXY[1]--;
-                } else if ((poziciaXY[0] == 6 && poziciaXY[1] < 4) ||
-                           (poziciaXY[0] == 10 && poziciaXY[1] <= 6) ||
-                           ((poziciaXY[0] == 6) && poziciaXY[1] >= 6)) {
-                    poziciaXY[1]++;
-                }
-                //TODO Potom odstranit
-                cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << " -> ";
-                pocetKrokov++;
-            } else {
-
-                switch (farbaFigurky) {
-                    case 'C': poziciaXY[0]++;
-                        break;
-                    case 'M': poziciaXY[1]--;
-                        break;
-                    case 'B': poziciaXY[0]--;
-                        break;
-                    case 'Z': poziciaXY[1]++;
-                        break;
-                }
-                jeNaHracejPloche = false;
-                jeVZakladni = false;
-                jeVDomceku = true;
+            if ((poziciaXY[0] < 4 && poziciaXY[1] == 4) ||
+                (poziciaXY[0] < 6 && poziciaXY[1] == 0) ||
+                ((poziciaXY[0] >= 6 && poziciaXY[0] < 10) && poziciaXY[1] == 4)) {
+                poziciaXY[0]++;
+            } else if ((poziciaXY[0] > 6 && poziciaXY[1] == 6) ||
+                       ((poziciaXY[0] > 4) && poziciaXY[1] == 10) ||
+                       ((poziciaXY[0] <= 4 && poziciaXY[0] > 0) && poziciaXY[1] == 6)) {
+                poziciaXY[0]--;
+            } else if ((poziciaXY[0] == 4 && poziciaXY[1] > 6) ||
+                       (poziciaXY[0] == 0 && poziciaXY[1] <= 6) ||
+                       ((poziciaXY[0] == 4) && poziciaXY[1] <= 4)) {
+                poziciaXY[1]--;
+            } else if ((poziciaXY[0] == 6 && poziciaXY[1] < 4) ||
+                       (poziciaXY[0] == 10 && poziciaXY[1] <= 6) ||
+                       ((poziciaXY[0] == 6) && poziciaXY[1] >= 6)) {
+                poziciaXY[1]++;
             }
+            //TODO Potom odstranit
+            cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << " -> ";
+            pocetKrokov++;
+        } else {
+
+            switch (farbaFigurky) {
+                case 'C':
+                    poziciaXY[0]++;
+                    break;
+                case 'M':
+                    poziciaXY[1]--;
+                    break;
+                case 'B':
+                    poziciaXY[0]--;
+                    break;
+                case 'Z':
+                    poziciaXY[1]++;
+                    break;
+            }
+            jeNaHracejPloche = false;
+            jeVZakladni = false;
+            jeVDomceku = true;
         }
     }
+
 }
 
 //setteri
@@ -83,22 +83,16 @@ void Figurka::setIDFigurky(int cislo) {
 }
 
 
-void Figurka::setJeNaHracejPloche(bool stav) {
-    jeNaHracejPloche = stav;
-}
-
-
-void Figurka::setJeNaStartovacejPozicii(bool stav) {
-    naStartovacejPozicii = stav;
-}
-
-
-void Figurka::setJeVDomceku(bool stav) {
-    jeVDomceku = stav;
-}
-
 void Figurka::setJeVZakladni(bool stav) {
     jeVZakladni = stav;
+    if (stav)
+    {
+        naStartovacejPozicii = false;
+        jeNaHracejPloche = false;
+        jeVDomceku = false;
+        pocetKrokov = 0;
+    }
+
 }
 
 
@@ -157,4 +151,8 @@ bool Figurka::getJeNaStartovacejPozicii() {
 
 void Figurka::odpocitajKroky(int pocet) {
     pocetKrokov -= pocet;
+}
+
+int Figurka::getPocetKrokov() {
+    return pocetKrokov;
 }

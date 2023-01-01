@@ -21,19 +21,12 @@ Manazer::Manazer() {
     ////Pre test viacerych hracov - NEMAZAT!!!
     vyberNahodnehoZacinajuceho();
     printf("%s %c %s", "Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac \n");
-    for (int i = 0; i < 100; ++i) {
+    do {
         hraci[idAktualnehoHraca].vykonajTah();
+        //hp.skontrolujVyhodeneFigurky();
         hp.vykresliPlochu();
         dalsiHrac();
-    }
-
-    ////Pre test jedneho hraca
-    /*for (int i = 0; i < 20; ++i) {
-        hraci[0].vykonajTah();
-        hp.vykresliPlochu();
-    }*/
-
-
+    } while (beziHra());
 
     // bude sa cakat dovtedy kym pocet pripojenych hracov nebude 4
     /*pthread_mutex_lock()
@@ -45,11 +38,19 @@ Manazer::Manazer() {
 
 }
 
-void Manazer::beziHra() {
-
+bool Manazer::beziHra() {
+    for (int i = 0; i < pocetHracov; ++i) {
+        if (hraci[i].getVyhralHru()) {
+            printf("%s\n", "---Hra sa skoncila---");
+            printf("%s %c %s", "---Vyhral", farby[i], "hrac---");
+            return false;
+        }
+    }
+    return true;
 }
+
 void Manazer::dalsiHrac() {
-    if (idAktualnehoHraca < 3 )
+    if (idAktualnehoHraca < 3)
         idAktualnehoHraca++;
     else
         idAktualnehoHraca = 0;

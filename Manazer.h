@@ -14,7 +14,7 @@ class Manazer {
 public:
     Manazer();
     void dalsiHrac();
-    void beziHra();
+    bool beziHra();
     void vyberNahodnehoZacinajuceho();
 };
 
