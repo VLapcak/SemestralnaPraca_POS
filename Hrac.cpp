@@ -41,12 +41,13 @@ void Hrac::vykonajTah() {
         //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
         int pocetHodov = 3;
         while (pocetHodov > 0) {
-            //cislo = hod();
-            cislo = 6;
-            cout << "HODIL som 6" << endl;
+            cislo = hod();
+            //cislo = 6;
+            //cout << "HODIL som 6" << endl;
             if (cislo == 6) {
-                idFigurky = vyberFigurku();
+                //idFigurky = vyberFigurku();
                 while (cislo == 6) {
+                    idFigurky = vyberFigurku();
                     bool validnyTah = false;
 
                     while (!validnyTah) {
@@ -70,9 +71,7 @@ void Hrac::vykonajTah() {
                                    figurky[idFigurky - 1].getJeNaHracejPloche()) {
                             overPozicieFigurok(cislo, idFigurky);
                             validnyTah = true;
-                        }
-                        else if (figurky[idFigurky - 1].getJeVDomceku())
-                        {
+                        } else if (figurky[idFigurky - 1].getJeVDomceku()) {
                             printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
                             idFigurky = vyberFigurku();
                         }
@@ -81,6 +80,8 @@ void Hrac::vykonajTah() {
 
                     pocetHodov = 0;
                 }
+                idFigurky = vyberFigurku();
+                idFigurky = skontrolujCiJeNaHP(idFigurky);
                 figurky[idFigurky - 1].posunOPolicka(cislo);
             }
             pocetHodov--;
@@ -90,10 +91,10 @@ void Hrac::vykonajTah() {
         // ak je nejaka figurka na SP tak tam ina nemoze ist
         cislo = hod();
         if (cislo == 6) {
-            idFigurky = vyberFigurku();
+            //idFigurky = vyberFigurku();
             while (cislo == 6) {
                 bool validnyTah = false;
-
+                idFigurky = vyberFigurku();
                 while (!validnyTah) {
                     int pocitadlo = 0;
                     if (figurky[idFigurky - 1].getJeVZakladni()) {
@@ -116,9 +117,7 @@ void Hrac::vykonajTah() {
                                figurky[idFigurky - 1].getJeNaHracejPloche()) {
                         overPozicieFigurok(cislo, idFigurky);
                         validnyTah = true;
-                    }
-                    else if (figurky[idFigurky - 1].getJeVDomceku())
-                    {
+                    } else if (figurky[idFigurky - 1].getJeVDomceku()) {
                         printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
                         idFigurky = vyberFigurku();
                     }
@@ -137,8 +136,7 @@ void Hrac::vykonajTah() {
     }
     pocetFigurokDomcek = 0;
     for (int i = 0; i < pocetFigurok; ++i) {
-        if(figurky[i].getJeVDomceku())
-        {
+        if (figurky[i].getJeVDomceku()) {
             pocetFigurokDomcek++;
         }
     }
@@ -162,17 +160,16 @@ bool Hrac::suFigurkyNaHP() {
     if (pocetFigurokNaHracejPloche > 0) {
         return true;
     }
-
     return false;
 }
 
 int Hrac::hod() {
-    printf("%s", ">> ");
+    printf("%s", "Hod kockou >> ");
     string hod;
     cin >> hod;
     while (hod != "hod") {
         printf("%s", "<Nespravny prikaz> \n");
-        printf("%s", ">> ");
+        printf("%s", "Hod kockou >> ");
         cin >> hod;
     }
     int cislo = kocka.getCislo();
@@ -199,7 +196,7 @@ int Hrac::vyberFigurku() {
 void Hrac::overPozicieFigurok(int pocetKrokov, int id) {
     id--;
     int pocitadlo = 1;
-    int  pocetNaHP;
+    int pocetNaHP;
     int *povodnaPozicia = new int[2];
     int *ocakavanaPozicia = new int[2];
 
@@ -211,10 +208,11 @@ void Hrac::overPozicieFigurok(int pocetKrokov, int id) {
 
 
         if ((figurky[id].getPocetKrokov() + pocetKrokov) > 43) {       //po 39 krokoch je figurka pred domcekom (domcek - > 40, 41, 42, 43)
-            printf("%s %c %d %s", "Figurka ", farbaHraca, id, " sa nemoze sa pohnut do domceka.\n");
+            printf("%s %c%d %s", "Figurka ",farbaHraca,id + 1," sa nemoze sa pohnut do domceka.\n");
             pocitadlo++;
+        } else {
+            figurky[id].posunOPolicka(pocetKrokov);
         }
-        figurky[id].posunOPolicka(pocetKrokov);
 
         ocakavanaPozicia[0] = figurky[id].getPoziciu()[0];
         ocakavanaPozicia[1] = figurky[id].getPoziciu()[1];
@@ -227,20 +225,21 @@ void Hrac::overPozicieFigurok(int pocetKrokov, int id) {
                     figurky[id].setPoziciu(povodnaPozicia[0], povodnaPozicia[1]);
                     pocitadlo++;
                 }
-                if (figurky[i].getJeNaHracejPloche())
-                {
+                if (figurky[i].getJeNaHracejPloche()) {
                     pocetNaHP++;
                 }
             }
         }
         if (pocitadlo > 0) {
-            if (pocetNaHP == 0)
-            {
-                printf("%s", "<Nemozno vykonat ziadny tah> \n");
-                break;
-            }
-            else
-            {
+            if (pocetNaHP == 0) {
+                if (pocetKrokov != 6 && !dostupnaVZakladni()) {
+                    printf("%s", "<Nemozno vykonat ziadny tah> \n");
+                    break;
+                } else {
+                    id = vyberFigurku();
+                    id = skontrolujCiJeNaHP(id) - 1;
+                }
+            } else {
                 printf("%s", "<S danou figurkou sa nemozno pohnut> \n");
                 id = vyberFigurku();
                 id = skontrolujCiJeNaHP(id) - 1;
@@ -253,6 +252,23 @@ void Hrac::overPozicieFigurok(int pocetKrokov, int id) {
 bool Hrac::getVyhralHru() {
     if (pocetFigurokDomcek == 4)
         return true;
+    return false;
+}
+
+void Hrac::setFigurkeZakladnu(int id) {
+    figurky[id].setJeVZakladni();
+}
+
+bool Hrac::dostupnaVZakladni() {
+    int pocet = 0;
+    for (int i = 0; i < pocetFigurok; ++i) {
+        if (figurky[i].getJeVZakladni()) {
+            pocet++;
+        }
+    }
+    if (pocet > 0) {
+        return true;
+    }
     return false;
 }
 

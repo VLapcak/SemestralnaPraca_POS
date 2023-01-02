@@ -42,7 +42,7 @@ void Figurka::posunOPolicka(int pocet) {
                 poziciaXY[1]++;
             }
             //TODO Potom odstranit
-            cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << " -> ";
+            //cout << "xy = " << poziciaXY[0] << ", " << poziciaXY[1] << " -> ";
             pocetKrokov++;
         } else {
 
@@ -83,16 +83,12 @@ void Figurka::setIDFigurky(int cislo) {
 }
 
 
-void Figurka::setJeVZakladni(bool stav) {
-    jeVZakladni = stav;
-    if (stav)
-    {
-        naStartovacejPozicii = false;
-        jeNaHracejPloche = false;
-        jeVDomceku = false;
-        pocetKrokov = 0;
-    }
-
+void Figurka::setJeVZakladni() {
+    jeVZakladni = true;
+    naStartovacejPozicii = false;
+    jeNaHracejPloche = false;
+    jeVDomceku = false;
+    pocetKrokov = 0;
 }
 
 
@@ -154,5 +150,8 @@ void Figurka::odpocitajKroky(int pocet) {
 }
 
 int Figurka::getPocetKrokov() {
+    jeNaHracejPloche = true;
+    jeVZakladni = false;
+    jeVDomceku = false;
     return pocetKrokov;
 }

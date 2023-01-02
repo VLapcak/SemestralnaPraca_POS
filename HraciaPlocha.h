@@ -54,10 +54,11 @@ private:
 
 
 public:
-    explicit HraciaPlocha(Hrac* h);
+    HraciaPlocha();
+    void setHracov(Hrac* h);
     void setZakladnaPlocha();
     void vykresliPlochu();
-    void setFigurkuNaZakladnu(char farba, int idFigurky);
+    int* getPoziciuZakladne(char farba, int idFigurky);
 
 };
 

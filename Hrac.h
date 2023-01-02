@@ -16,6 +16,8 @@ private:
     bool suFigurkyNaHP();
     void overPozicieFigurok(int pocetKrokov, int id);
     int skontrolujCiJeNaHP(int idFigurky);
+    bool dostupnaVZakladni();
+
 
 public:
     Hrac();
@@ -24,6 +26,7 @@ public:
     Figurka getFigurka(int id);
     void vykonajTah();
     bool getVyhralHru();
+    void setFigurkeZakladnu(int id);
 };
 
 

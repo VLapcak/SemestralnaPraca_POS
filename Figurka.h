@@ -22,7 +22,7 @@ public:
     void posunOPolicka(int pocet);
     void setFarbu(char farba);
     void setPoziciu(int x, int y);
-    void setJeVZakladni(bool stav);
+    void setJeVZakladni();
     void setIDFigurky(int cislo);
     void setNaStartovaciuPoziciu();
     void odpocitajKroky(int pocet);

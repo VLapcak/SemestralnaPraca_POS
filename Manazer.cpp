@@ -14,7 +14,7 @@ Manazer::Manazer() {
         hraci[i] = *new Hrac();
         hraci[i].setFarbu(farby[i]);
     }
-    HraciaPlocha hp = *new HraciaPlocha(hraci);
+    hp.setHracov(hraci);
     hp.setZakladnaPlocha();
     hp.vykresliPlochu();
 
@@ -23,7 +23,7 @@ Manazer::Manazer() {
     printf("%s %c %s", "Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac \n");
     do {
         hraci[idAktualnehoHraca].vykonajTah();
-        //hp.skontrolujVyhodeneFigurky();
+        skontrolujFigurky();
         hp.vykresliPlochu();
         dalsiHrac();
     } while (beziHra());
@@ -62,5 +62,54 @@ void Manazer::dalsiHrac() {
 void Manazer::vyberNahodnehoZacinajuceho() {
     idAktualnehoHraca = rand() % 3 + 0;
 }
+
+void Manazer::skontrolujFigurky() {
+
+    for (int f = 0; f < 4; ++f) {
+        if (hraci[idAktualnehoHraca].getFigurka(f).getJeNaHracejPloche()) { // figurky aktualne iduceho hraca
+
+            for (int i = 0; i < pocetHracov; ++i) {
+                for (int j = 0; j < 4; ++j) { // nepriatelske figurky
+
+                    if (i != idAktualnehoHraca) {
+                        // aktualny hrac na tahu        v porovnani s ostatnymi hracmi a ich figurkami
+                        if (hraci[idAktualnehoHraca].getFigurka(f).getPoziciu()[0] == hraci[i].getFigurka(j).getPoziciu()[0]
+                            && hraci[idAktualnehoHraca].getFigurka(f).getPoziciu()[1] == hraci[i].getFigurka(j).getPoziciu()[1]) {
+
+                            hraci[i].setFigurkeZakladnu(j);
+                            setFigurkuNaZakladnu(farby[i], j);
+                            printf("%c%d %s %c%d", farby[idAktualnehoHraca], f + 1, "vyhodil", farby[i], j + 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+void Manazer::setFigurkuNaZakladnu(char farba, int idFigurky) {
+    int* pozicia = hp.getPoziciuZakladne(farba, idFigurky);
+    switch (farba) {
+        case 'C':
+            hraci[0].getFigurka(idFigurky).setPoziciu(pozicia[0], pozicia[1]);
+            break;
+        case 'M':
+            hraci[1].getFigurka(idFigurky).setPoziciu(pozicia[0], pozicia[1]);
+            break;
+        case 'B':
+            hraci[2].getFigurka(idFigurky).setPoziciu(pozicia[0], pozicia[1]);
+            break;
+        case 'Z':
+            hraci[3].getFigurka(idFigurky).setPoziciu(pozicia[0], pozicia[1]);
+            break;
+
+        default:
+            printf("<Error, zle zadana farba>");
+            break;
+    }
+}
+
+
 
 
