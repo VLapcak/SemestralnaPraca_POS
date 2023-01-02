@@ -173,7 +173,7 @@ int Hrac::hod() {
         cin >> hod;
     }
     int cislo = kocka.getCislo();
-    printf("%s %d %s", "Hodil si:", cislo, "\n");
+    printf("%s %d\n\n", "Hodil si:", cislo);
     return cislo;
 }
 

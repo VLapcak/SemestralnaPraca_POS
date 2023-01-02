@@ -20,7 +20,7 @@ Manazer::Manazer() {
 
     ////Pre test viacerych hracov - NEMAZAT!!!
     vyberNahodnehoZacinajuceho();
-    printf("%s %c %s", "Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac \n");
+    printf("\n%s %c %s", "-------------Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac-------------- \n");
     do {
         hraci[idAktualnehoHraca].vykonajTah();
         skontrolujFigurky();
@@ -55,7 +55,7 @@ void Manazer::dalsiHrac() {
     else
         idAktualnehoHraca = 0;
 
-    printf("%s %c %s", "Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac \n");
+    printf("\n%s %c %s", "-------------Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac-------------- \n");
 
 }
 
