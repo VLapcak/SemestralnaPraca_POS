@@ -2,6 +2,7 @@
 #define SEMESTRALKA_LAPCAK_IHRING_HRAC_H
 #include "Figurka.h"
 #include "Kocka.h"
+#include "string"
 
 class Hrac {
 
@@ -12,7 +13,7 @@ private:
     Figurka figurky[4];
     Kocka kocka;
     int vyberFigurku();
-    int hod();
+    int hod(std::string prikaz);
     bool suFigurkyNaHP();
     void overPozicieFigurok(int pocetKrokov, int id);
     int skontrolujCiJeNaHP(int idFigurky);
@@ -24,7 +25,7 @@ public:
     void setFarbu(char farba);
     char getFarbu();
     Figurka getFigurka(int id);
-    void vykonajTah();
+    void vykonajTah(const std::string& prikaz);
     bool getVyhralHru();
     void setFigurkeZakladnu(int id);
 };

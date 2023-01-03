@@ -2,6 +2,7 @@
 #define SEMESTRALKA_LAPCAK_IHRING_MANAZER_H
 
 #include "HraciaPlocha.h"
+#include "string"
 
 class Manazer {
 
@@ -20,6 +21,7 @@ private:
 
 public:
     Manazer();
+    bool posliPrikaz(int idKlienta, const std::string& prikaz);
 
 
 };

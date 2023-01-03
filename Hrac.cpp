@@ -1,6 +1,7 @@
 #include "Hrac.h"
 #include <iostream>
 #include <limits>
+#include "string.h"
 
 using namespace std;
 
@@ -31,7 +32,7 @@ char Hrac::getFarbu() {
     return farbaHraca;
 }
 
-void Hrac::vykonajTah() {
+void Hrac::vykonajTah(const string& prikaz) {
     int cislo = 0;
     int idFigurky = 0;
 
@@ -41,7 +42,7 @@ void Hrac::vykonajTah() {
         //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
         int pocetHodov = 3;
         while (pocetHodov > 0) {
-            cislo = hod();
+            cislo = hod(prikaz);
             //cislo = 6;
             //cout << "HODIL som 6" << endl;
             if (cislo == 6) {
@@ -76,7 +77,7 @@ void Hrac::vykonajTah() {
                             idFigurky = vyberFigurku();
                         }
                     }
-                    cislo = hod();
+                    cislo = hod(prikaz);
 
                     pocetHodov = 0;
                 }
@@ -89,7 +90,7 @@ void Hrac::vykonajTah() {
     } else { //ak je uz nejaka figurka na hracej ploche
 
         // ak je nejaka figurka na SP tak tam ina nemoze ist
-        cislo = hod();
+        cislo = hod(prikaz);
         if (cislo == 6) {
             //idFigurky = vyberFigurku();
             while (cislo == 6) {
@@ -122,7 +123,7 @@ void Hrac::vykonajTah() {
                         idFigurky = vyberFigurku();
                     }
                 }
-                cislo = hod();
+                cislo = hod(prikaz);
             }
             idFigurky = vyberFigurku();
             idFigurky = skontrolujCiJeNaHP(idFigurky);
@@ -163,14 +164,12 @@ bool Hrac::suFigurkyNaHP() {
     return false;
 }
 
-int Hrac::hod() {
+int Hrac::hod(string prikaz) {
     printf("%s", "Hod kockou >> ");
-    string hod;
-    cin >> hod;
-    while (hod != "hod") {
+    while (prikaz != "hod") {
         printf("%s", "<Nespravny prikaz> \n");
         printf("%s", "Hod kockou >> ");
-        cin >> hod;
+        cin >> prikaz;
     }
     int cislo = kocka.getCislo();
     printf("%s %d\n\n", "Hodil si:", cislo);

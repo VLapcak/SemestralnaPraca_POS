@@ -1,7 +1,7 @@
-all: CNS_App klient
+all: server klient
 
-CNS_App: main.o Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o Tcp_server.o
-	g++ main.o Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o Tcp_server.o -o CNS_App
+server: main.o Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o Tcp_server.o
+	g++ main.o Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o Tcp_server.o -o server
 
 klient: Tcp_client.o
 	g++ Tcp_client.o -o klient
@@ -31,4 +31,4 @@ Figurka.o: Figurka.cpp Figurka.h
 	g++ -c Figurka.cpp
 
 clean:
-	rm *.o CNS_App
+	rm *.o server klient

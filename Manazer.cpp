@@ -20,13 +20,7 @@ Manazer::Manazer() {
 
     ////Pre test viacerych hracov - NEMAZAT!!!
     vyberNahodnehoZacinajuceho();
-    printf("\n%s %c %s", "-------------Na rade je", hraci[idAktualnehoHraca].getFarbu(), "hrac-------------- \n");
-    do {
-        hraci[idAktualnehoHraca].vykonajTah();
-        skontrolujFigurky();
-        hp.vykresliPlochu();
-        dalsiHrac();
-    } while (beziHra());
+
 
     // bude sa cakat dovtedy kym pocet pripojenych hracov nebude 4
     /*pthread_mutex_lock()
@@ -108,6 +102,17 @@ void Manazer::setFigurkuNaZakladnu(char farba, int idFigurky) {
             printf("<Error, zle zadana farba>");
             break;
     }
+}
+
+bool Manazer::posliPrikaz(int idKlienta, const string& prikaz) {
+    printf("\n%s %c %s", "-------------Na rade je", hraci[idKlienta].getFarbu(), "hrac-------------- \n");
+    do {
+        hraci[idKlienta].vykonajTah(prikaz);
+        skontrolujFigurky();
+        hp.vykresliPlochu();
+        dalsiHrac();
+    } while (beziHra());
+    return false;
 }
 
 
