@@ -5,11 +5,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
-#include "Tcp_client.h"
 
-int Tcp_client::create_client(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    printf("%s", "pripojeny ako klient");
     int sockfd, n;
     struct sockaddr_in serv_addr;
     struct hostent* server;
@@ -74,8 +72,4 @@ int Tcp_client::create_client(int argc, char **argv)
     close(sockfd);
 
     return 0;
-}
-
-Tcp_client::Tcp_client(int argc, char **argv) {
-    create_client(argc, argv);
 }

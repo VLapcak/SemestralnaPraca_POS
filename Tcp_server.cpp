@@ -9,7 +9,6 @@
 
 int Tcp_server::create_server(int argc, char **argv) {
 
-    printf("%s", "pripojeny ako server");
     int sockfd, newsockfd;
     socklen_t cli_len;
     struct sockaddr_in serv_addr, cli_addr;
