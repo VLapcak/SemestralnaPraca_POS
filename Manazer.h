@@ -13,16 +13,19 @@ private:
     char farby[4]{'C', 'M', 'B', 'Z'};
     int idAktualnehoHraca;
     int pocetPripojenychHracov;
-    void dalsiHrac();
+
     bool beziHra();
     void vyberNahodnehoZacinajuceho();
-    void skontrolujFigurky();
+    void skontrolujFigurky(int id);
     void setFigurkuNaZakladnu(char farba, int idFigurky);
 
 public:
     Manazer();
-    bool posliPrikaz(int idKlienta, const std::string& prikaz);
+    void dalsiHrac(int aktualneID);
+    void* hraj(void * args);
+    void* hrajKlient(void * args);
 
-
+    static void* run_server(void* ptr);
+    static void* run_klient(void* ptr);
 };
 #endif //SEMESTRALKA_LAPCAK_IHRING_MANAZER_H

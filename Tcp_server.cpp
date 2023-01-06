@@ -7,10 +7,24 @@
 #include "Tcp_server.h"
 #include "Manazer.h"
 
+typedef struct {
+    int aktualneId;
+    pthread_mutex_t *mutex;
+    pthread_cond_t *condServer;
+    pthread_cond_t *condKlient;
+} DATA;
+typedef struct {
+    int id;
+    DATA *data;
+} SD;
+typedef struct {
+    int id;
+    DATA *data;
+} KD;
 
 int Tcp_server::create_server(int argc, char **argv) {
 
-    Manazer manazer = Manazer();
+    //Manazer manazer = Manazer();
     int sockfd, newsockfd;
     socklen_t cli_len;
     struct sockaddr_in serv_addr, cli_addr;
@@ -46,24 +60,64 @@ int Tcp_server::create_server(int argc, char **argv) {
         perror("ERROR on accept");
         return 3;
     }
-    int i = 0;
-    while (i < 5) {
-        i++;
+
+    //spustam hru
+    Manazer manazer = Manazer();
+
+    pthread_t klient;
+    pthread_t server;
+    pthread_mutex_t  mutex;
+    pthread_cond_t condServer;
+    pthread_cond_t condKlient;
+
+    pthread_mutex_init(&mutex, nullptr);
+    pthread_cond_init(&condServer, nullptr);
+    pthread_cond_init(&condKlient, nullptr);
+
+    DATA data = {
+            0, &mutex, &condServer, &condKlient
+    };
+    SD serverData = {
+            0, &data
+    };
+    KD klientData = {
+            1, &data
+    };
+
+    pthread_create(&klient, nullptr, &Manazer::run_klient, &klientData);
+    pthread_create(&server, nullptr, &Manazer::run_server, &serverData);
+
+    pthread_join(klient, nullptr);
+    pthread_join(server, nullptr);
+
+
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&condServer);
+    pthread_cond_destroy(&condKlient);
+
+
+    while (true) {
+
+
         bzero(buffer, 256);
         n = read(newsockfd, buffer, 255);
         if (n < 0) {
             perror("Error reading from socket");
             return 4;
         }
-        printf("Here is the message: %s\n", buffer);
-        //manazer.posliPrikaz(1, s);
+        //printf("Here is the message: %s\n", buffer);
 
-        const char *msg = "I got your message";
-        n = write(newsockfd, msg, strlen(msg) + 1);
+        //const char *msg = "I got your message";
+        printf("Please enter a message: ");
+        bzero(buffer, 256);
+        fgets(buffer, 255, stdin);
+        n = write(newsockfd, buffer, strlen(buffer) + 1);
         if (n < 0) {
             perror("Error writing to socket");
             return 5;
         }
+
+
     }
 
     close(newsockfd);
@@ -74,5 +128,9 @@ int Tcp_server::create_server(int argc, char **argv) {
 
 Tcp_server::Tcp_server(int argc, char **argv) {
     create_server(argc, argv);
+}
+
+void *Tcp_server::hrajHru(void *args) {
+    return nullptr;
 }
 

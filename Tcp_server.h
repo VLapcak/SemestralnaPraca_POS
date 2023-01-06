@@ -4,9 +4,11 @@
 
 class Tcp_server {
     int create_server(int argc, char *argv[]);
+    void* hrajHru(void* args);
 
 public:
     Tcp_server(int argc, char *argv[]);
+
 };
 
 

@@ -5,7 +5,7 @@
 using namespace std;
 
 
-HraciaPlocha::HraciaPlocha() {
+HraciaPlocha::HraciaPlocha() : velkost(11) {
 
 }
 //// funkcia pre vykreslenie hracej plochy

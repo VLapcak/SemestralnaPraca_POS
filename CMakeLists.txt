@@ -4,7 +4,8 @@ project(Semestralka_lapcak_ihring)
 set(CMAKE_CXX_STANDARD 14)
 
 add_executable(Semestralka_lapcak_ihring main.cpp HraciaPlocha.cpp Hrac.cpp Figurka.cpp Kocka.cpp Manazer.cpp Tcp_server.cpp)
-
+add_executable(klient Tcp_client.cpp)
+target_link_libraries(Semestralka_lapcak_ihring pthread)
 
 #set(SFML_STATIC_LIBRARIES TRUE)
 #set(SFML_DIR SFML/lib/cmake/SFML)

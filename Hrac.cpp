@@ -32,7 +32,7 @@ char Hrac::getFarbu() {
     return farbaHraca;
 }
 
-void Hrac::vykonajTah(const string& prikaz) {
+void Hrac::vykonajTah() {
     int cislo = 0;
     int idFigurky = 0;
 
@@ -42,7 +42,7 @@ void Hrac::vykonajTah(const string& prikaz) {
         //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
         int pocetHodov = 3;
         while (pocetHodov > 0) {
-            cislo = hod(prikaz);
+            cislo = hod();
             //cislo = 6;
             //cout << "HODIL som 6" << endl;
             if (cislo == 6) {
@@ -77,7 +77,7 @@ void Hrac::vykonajTah(const string& prikaz) {
                             idFigurky = vyberFigurku();
                         }
                     }
-                    cislo = hod(prikaz);
+                    cislo = hod();
 
                     pocetHodov = 0;
                 }
@@ -90,7 +90,7 @@ void Hrac::vykonajTah(const string& prikaz) {
     } else { //ak je uz nejaka figurka na hracej ploche
 
         // ak je nejaka figurka na SP tak tam ina nemoze ist
-        cislo = hod(prikaz);
+        cislo = hod();
         if (cislo == 6) {
             //idFigurky = vyberFigurku();
             while (cislo == 6) {
@@ -123,7 +123,7 @@ void Hrac::vykonajTah(const string& prikaz) {
                         idFigurky = vyberFigurku();
                     }
                 }
-                cislo = hod(prikaz);
+                cislo = hod();
             }
             idFigurky = vyberFigurku();
             idFigurky = skontrolujCiJeNaHP(idFigurky);
@@ -164,12 +164,14 @@ bool Hrac::suFigurkyNaHP() {
     return false;
 }
 
-int Hrac::hod(string prikaz) {
+int Hrac::hod() {
     printf("%s", "Hod kockou >> ");
-    while (prikaz != "hod") {
+    string s;
+    cin >> s;
+    while (s != "hod") {
         printf("%s", "<Nespravny prikaz> \n");
         printf("%s", "Hod kockou >> ");
-        cin >> prikaz;
+        cin >> s;
     }
     int cislo = kocka.getCislo();
     printf("%s %d\n\n", "Hodil si:", cislo);

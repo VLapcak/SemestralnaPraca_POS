@@ -13,7 +13,7 @@ private:
     Figurka figurky[4];
     Kocka kocka;
     int vyberFigurku();
-    int hod(std::string prikaz);
+    int hod();
     bool suFigurkyNaHP();
     void overPozicieFigurok(int pocetKrokov, int id);
     int skontrolujCiJeNaHP(int idFigurky);
@@ -25,7 +25,7 @@ public:
     void setFarbu(char farba);
     char getFarbu();
     Figurka getFigurka(int id);
-    void vykonajTah(const std::string& prikaz);
+    void vykonajTah();
     bool getVyhralHru();
     void setFigurkeZakladnu(int id);
 };
