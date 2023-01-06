@@ -25,78 +25,8 @@ Manazer::Manazer() {
 
 }
 
-typedef struct {
-    int aktualneId;
-    pthread_mutex_t *mutex;
-    pthread_cond_t *condServer;
-    pthread_cond_t *condKlient;
-} DATA;
-typedef struct {
-    int id;
-    DATA *data;
-} SD;
-typedef struct {
-    int id;
-    DATA *data;
-} KD;
-
 //id servera je 0
 //id klienta je 1
-
-void *Manazer::hrajKlient(void *args) {
-
-    KD *klientData = (KD *) args;
-    DATA *d = (DATA *) klientData->data;
-
-    hp.vykresliPlochu();
-    while (beziHra()) {
-
-        pthread_mutex_lock(d->mutex);
-        while (d->aktualneId != 1) {
-            printf("Klient caka na server");
-            pthread_cond_wait(d->condKlient, d->mutex);
-        }
-        int id = klientData->id;
-        hraci[id].vykonajTah();
-        skontrolujFigurky(id);
-        hp.vykresliPlochu();
-        printf("prehadzujem na server");
-        d->aktualneId = 0;
-        pthread_cond_signal(d->condServer);
-        pthread_mutex_unlock(d->mutex);
-
-
-
-    }
-
-    pthread_exit(nullptr);
-}
-
-void *Manazer::hraj(void *args) {
-
-    SD *serverData = (SD *) args;
-    DATA *d = (DATA *) serverData->data;
-
-    while (beziHra()) {
-        pthread_mutex_lock(d->mutex);
-        while (d->aktualneId != 0) {
-            printf("Server caka na klienta");
-            pthread_cond_wait(d->condServer, d->mutex);
-        }
-        int id = serverData->id;
-        hraci[id].vykonajTah();
-        skontrolujFigurky(id);
-        hp.vykresliPlochu();
-        printf("prehadzujem na klienta");
-        d->aktualneId = 1;
-        pthread_cond_signal(d->condKlient);
-        pthread_mutex_unlock(d->mutex);
-
-    }
-
-    pthread_exit(nullptr);
-}
-
 
 bool Manazer::beziHra() {
     for (int i = 0; i < pocetHracov; ++i) {
@@ -107,16 +37,6 @@ bool Manazer::beziHra() {
         }
     }
     return true;
-}
-
-void Manazer::dalsiHrac(int aktualneID) {
-    if (aktualneID < pocetHracov - 1)
-        aktualneID++;
-    else
-        aktualneID = 0;
-
-    printf("\n%s %c %s", "-------------Na rade je", hraci[aktualneID].getFarbu(), "hrac-------------- \n");
-
 }
 
 void Manazer::vyberNahodnehoZacinajuceho() {
@@ -172,21 +92,20 @@ void Manazer::setFigurkuNaZakladnu(char farba, int idFigurky) {
     }
 }
 
-
-void *Manazer::run_server(void *ptr) {
-    {
-        static_cast<Manazer *>(ptr)->hraj(ptr);
-        return nullptr;
-    }
-}
-void *Manazer::run_klient(void *ptr) {
-    {
-        static_cast<Manazer *>(ptr)->hrajKlient(ptr);
-        return nullptr;
-    }
+Hrac *Manazer::getHraci() {
+    return hraci;
 }
 
+HraciaPlocha Manazer::getHraciaPlocha() {
+    return hp;
+}
 
+int Manazer::getDalsiHrac(int aktualneID, int maxHracov) {
+    if (aktualneID < maxHracov - 1)
+        aktualneID++;
+    else
+        aktualneID = 0;
 
-
-
+    printf("\n%s %c %s", "-------------Na rade je", hraci[aktualneID].getFarbu(), "hrac-------------- \n");
+    return aktualneID;
+}

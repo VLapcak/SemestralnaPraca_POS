@@ -4,7 +4,7 @@ server: main.o Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o Tcp_server.o
 	g++ main.o Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o Tcp_server.o -o server -lpthread
 
 klient: Tcp_client.o
-	g++ Tcp_client.o -o klient
+	g++ Tcp_client.o -o klient -lpthread
 
 main.o: main.cpp
 	g++ -c main.cpp
