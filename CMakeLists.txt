@@ -3,8 +3,8 @@ project(Semestralka_lapcak_ihring)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Semestralka_lapcak_ihring main.cpp HraciaPlocha.cpp Hrac.cpp Figurka.cpp Kocka.cpp Manazer.cpp Tcp_server.cpp ZdielaneData.cpp)
-add_executable(klient HraciaPlocha.cpp Hrac.cpp Figurka.cpp Kocka.cpp Manazer.cpp ZdielaneData.cpp Tcp_client.cpp)
+add_executable(Semestralka_lapcak_ihring main.cpp HraciaPlocha.cpp Hrac.cpp Figurka.cpp Kocka.cpp Manazer.cpp Tcp_server.cpp ZdielaneData.cpp Data.cpp Data.h)
+add_executable(klient HraciaPlocha.cpp Hrac.cpp Figurka.cpp Kocka.cpp Manazer.cpp ZdielaneData.cpp Tcp_client.cpp Data.cpp Data.h)
 target_link_libraries(Semestralka_lapcak_ihring pthread)
 target_link_libraries(klient pthread)
 

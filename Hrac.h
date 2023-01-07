@@ -12,11 +12,11 @@ private:
     char farbaHraca;
     Figurka figurky[4];
     Kocka kocka;
-    int vyberFigurku();
-    int hod();
+    int vyberFigurku(int idFig);
+    int hod(char znak);
     bool suFigurkyNaHP();
     void overPozicieFigurok(int pocetKrokov, int id);
-    int skontrolujCiJeNaHP(int idFigurky);
+    int skontrolujCiJeNaHP(int idFig);
     bool dostupnaVZakladni();
 
 
@@ -25,7 +25,7 @@ public:
     void setFarbu(char farba);
     char getFarbu();
     Figurka getFigurka(int id);
-    void vykonajTah();
+    void vykonajTah(char znak, int idFig);
     bool getVyhralHru();
     void setFigurkeZakladnu(int id);
 };

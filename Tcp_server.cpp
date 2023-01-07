@@ -7,7 +7,18 @@
 #include "Tcp_server.h"
 #include "Manazer.h"
 
+Manazer manazer;
+
+//pthread_t klient;
+pthread_t server;
+pthread_mutex_t  mutex;
+pthread_cond_t condServer;
+pthread_cond_t condKlient;
+
+
 typedef struct {
+    char *buffer;
+    int newsockfd;
     Manazer manazer;
     int aktualneId;
     pthread_mutex_t *mutex;
@@ -23,6 +34,31 @@ typedef struct {
     DATA *data;
 } KD;
 
+char* Tcp_server::citaj(char *buffer, int newsockfd) {
+    bzero(buffer, 256);
+    int n = read(newsockfd, buffer, 255);
+    if (n < 0) {
+        perror("Error reading from socket");
+        //return 4;
+    }
+    printf("Here is the message: %s\n", buffer);
+
+    return buffer;
+}
+
+void Tcp_server::zapis(char *buffer, int newsockfd) {
+    const char *msg = "I got your message";
+    printf("Please enter a message: ");
+    bzero(buffer, 256);
+    //fgets(buffer, 255, stdin);
+    buffer = "Vykonal si tah, zvol si figurku";
+    int n = write(newsockfd, buffer, strlen(buffer) + 1);
+    if (n < 0) {
+        perror("Error writing to socket");
+        //return 5;
+    }
+}
+
 static void *hrajKlient(void *args) {
 
     KD *klientData = (KD *) args;
@@ -34,14 +70,15 @@ static void *hrajKlient(void *args) {
             printf("Klient caka na server\n");
             pthread_cond_wait(d->condKlient, d->mutex);
         }
-        int id = klientData->id;
-        d->manazer.getHraci()[id].vykonajTah();
-        d->manazer.skontrolujFigurky(id);
-        d->manazer.getHraciaPlocha().vykresliPlochu();
+
+        int idHraca = klientData->id;
+        /*d->manazer.getHraci()[idHraca].vykonajTah(znak, idFig);
+        d->manazer.skontrolujFigurky(idHraca);
+        d->manazer.getHraciaPlocha().vykresliPlochu();*/
         printf("prehadzujem na server\n");
-        d->aktualneId = d->manazer.getDalsiHrac(d->aktualneId, 2);
+        /*d->aktualneId = d->manazer.getDalsiHrac(d->aktualneId, 2);
         pthread_cond_signal(d->condServer);
-        pthread_mutex_unlock(d->mutex);
+        pthread_mutex_unlock(d->mutex);*/
 
     } while (d->manazer.beziHra());
 
@@ -56,16 +93,49 @@ static void *hrajServer(void *args) {
     do {
         pthread_mutex_lock(d->mutex);
         while (d->aktualneId != 0) {
-            printf("Server caka na klienta\n");
+            printf("Server caka na klienta aby napisal 'h'\n");
             pthread_cond_wait(d->condServer, d->mutex);
         }
-        int id = serverData->id;
-        //int id = d->idServer;
-        d->manazer.getHraci()[id].vykonajTah();
-        d->manazer.skontrolujFigurky(id);
-        d->manazer.getHraciaPlocha().vykresliPlochu();
-        printf("prehadzujem na klienta\n");
+        pthread_mutex_unlock(d->mutex);
+
+        pthread_mutex_lock(d->mutex);
+        do {
+            Tcp_server::citaj(d->buffer, d->newsockfd);
+        } while (*d->buffer != 'h');
+        char znak = *d->buffer;
+
+        Tcp_server::zapis(d->buffer,d->newsockfd);
         d->aktualneId = d->manazer.getDalsiHrac(d->aktualneId, 2);
+        printf("prehadzujem na klienta aby zadal figurku\n");
+
+        pthread_mutex_unlock(d->mutex);
+
+        pthread_mutex_lock(d->mutex);
+        while (d->aktualneId != 0) {
+            printf("Server caka na klienta aby zadal figurku\n");
+            pthread_cond_wait(d->condServer, d->mutex);
+        }
+        pthread_mutex_unlock(d->mutex);
+
+        pthread_mutex_lock(d->mutex);
+        //printf("prehadzujem na klienta aby zadal figurku\n");
+        printf("%s%c%s", "figurka buffer = ", *d->buffer, "\n");
+
+
+        /*do {
+            Tcp_server::citaj(d->buffer, d->newsockfd);
+        } while (d->buffer[0] != '0' || d->buffer[0] != '1' || d->buffer[0] != '2' || d->buffer[0] != '3');
+        int idFig = d->buffer[0];*/
+        int idFig = 1;
+
+        int idHraca = serverData->id;
+
+        d->manazer.getHraci()[idHraca].vykonajTah(znak, idFig);
+        d->manazer.skontrolujFigurky(idHraca);
+        d->manazer.getHraciaPlocha().vykresliPlochu();
+
+        d->aktualneId = d->manazer.getDalsiHrac(d->aktualneId, 2);
+        printf("prehadzujem na klienta\n");
         pthread_cond_signal(d->condKlient);
         pthread_mutex_unlock(d->mutex);
 
@@ -112,38 +182,34 @@ int Tcp_server::create_server(int argc, char **argv) {
         return 3;
     }
 
-    Manazer manazer;
+    /*Manazer manazer;
 
-    pthread_t klient;
+    //pthread_t klient;
     pthread_t server;
     pthread_mutex_t  mutex;
     pthread_cond_t condServer;
-    pthread_cond_t condKlient;
+    pthread_cond_t condKlient;*/
 
     pthread_mutex_init(&mutex, nullptr);
     pthread_cond_init(&condServer, nullptr);
     pthread_cond_init(&condKlient, nullptr);
 
+
     DATA data = {
-            manazer,0, &mutex, &condServer, &condKlient
+            buffer, newsockfd, manazer, 0, &mutex, &condServer, &condKlient
     };
     SD serverData = {
             0, &data
     };
-    KD klientData = {
+    /*KD klientData = {
             1, &data
-    };
+    };*/
 
-    pthread_create(&klient, nullptr, hrajKlient, &klientData);
+    //pthread_create(&klient, nullptr, hrajKlient, &klientData);
     pthread_create(&server, nullptr, hrajServer, &serverData);
 
-    pthread_join(klient, nullptr);
+    //pthread_join(klient, nullptr);
     pthread_join(server, nullptr);
-
-
-    pthread_mutex_destroy(&mutex);
-    pthread_cond_destroy(&condServer);
-    pthread_cond_destroy(&condKlient);
 
 
     while (true) {
@@ -155,9 +221,9 @@ int Tcp_server::create_server(int argc, char **argv) {
             perror("Error reading from socket");
             return 4;
         }
-        //printf("Here is the message: %s\n", buffer);
+        printf("Here is the message: %s\n", buffer);
 
-        //const char *msg = "I got your message";
+        const char *msg = "I got your message";
         printf("Please enter a message: ");
         bzero(buffer, 256);
         fgets(buffer, 255, stdin);
@@ -169,6 +235,10 @@ int Tcp_server::create_server(int argc, char **argv) {
 
 
     }
+
+    pthread_mutex_destroy(&mutex);
+    pthread_cond_destroy(&condServer);
+    //pthread_cond_destroy(&condKlient);
 
     close(newsockfd);
     close(sockfd);
@@ -183,4 +253,6 @@ Tcp_server::Tcp_server(int argc, char **argv) {
 void *Tcp_server::hrajHru(void *args) {
     return nullptr;
 }
+
+
 
