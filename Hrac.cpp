@@ -32,7 +32,7 @@ char Hrac::getFarbu() {
     return farbaHraca;
 }
 
-void Hrac::vykonajTah() {
+int Hrac::vykonajTah() {
     int cislo = 0;
     int idFigurky = 0;
 
@@ -141,6 +141,7 @@ void Hrac::vykonajTah() {
             pocetFigurokDomcek++;
         }
     }
+    return idFigurky;
 }
 
 int Hrac::skontrolujCiJeNaHP(int idFigurky) {

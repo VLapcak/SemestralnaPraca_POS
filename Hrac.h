@@ -25,7 +25,7 @@ public:
     void setFarbu(char farba);
     char getFarbu();
     Figurka getFigurka(int id);
-    void vykonajTah();
+    int vykonajTah(); //vrati idFigurky
     bool getVyhralHru();
     void setFigurkeZakladnu(int id);
 };

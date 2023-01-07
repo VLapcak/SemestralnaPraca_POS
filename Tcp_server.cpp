@@ -10,23 +10,16 @@
 typedef struct {
     Manazer manazer;
     int aktualneId;
+    int idServer;
+    int idKlient;
     pthread_mutex_t *mutex;
     pthread_cond_t *condServer;
     pthread_cond_t *condKlient;
 } DATA;
-typedef struct {
-    int id;
-    DATA *data;
-} SD;
-typedef struct {
-    int id;
-    DATA *data;
-} KD;
 
 static void *hrajKlient(void *args) {
 
-    KD *klientData = (KD *) args;
-    DATA *d = (DATA *) klientData->data;
+    DATA *d = (DATA *) args;
 
     do {
         pthread_mutex_lock(d->mutex);
@@ -34,7 +27,7 @@ static void *hrajKlient(void *args) {
             printf("Klient caka na server\n");
             pthread_cond_wait(d->condKlient, d->mutex);
         }
-        int id = klientData->id;
+        int id = d->idKlient;
         d->manazer.getHraci()[id].vykonajTah();
         d->manazer.skontrolujFigurky(id);
         d->manazer.getHraciaPlocha().vykresliPlochu();
@@ -50,8 +43,7 @@ static void *hrajKlient(void *args) {
 
 static void *hrajServer(void *args) {
 
-    SD *serverData = (SD *) args;
-    DATA *d = (DATA *) serverData->data;
+    DATA *d = (DATA *) args;
 
     do {
         pthread_mutex_lock(d->mutex);
@@ -59,7 +51,7 @@ static void *hrajServer(void *args) {
             printf("Server caka na klienta\n");
             pthread_cond_wait(d->condServer, d->mutex);
         }
-        int id = serverData->id;
+        int id = d->idServer;
         //int id = d->idServer;
         d->manazer.getHraci()[id].vykonajTah();
         d->manazer.skontrolujFigurky(id);
@@ -113,6 +105,9 @@ int Tcp_server::create_server(int argc, char **argv) {
     }
 
     Manazer manazer;
+    int aktualneId = 0;
+    const int idServer = 0;
+    const int idKlient = 1;
 
     pthread_t klient;
     pthread_t server;
@@ -125,17 +120,11 @@ int Tcp_server::create_server(int argc, char **argv) {
     pthread_cond_init(&condKlient, nullptr);
 
     DATA data = {
-            manazer,0, &mutex, &condServer, &condKlient
-    };
-    SD serverData = {
-            0, &data
-    };
-    KD klientData = {
-            1, &data
+            manazer,aktualneId, idServer, idKlient, &mutex, &condServer, &condKlient
     };
 
-    pthread_create(&klient, nullptr, hrajKlient, &klientData);
-    pthread_create(&server, nullptr, hrajServer, &serverData);
+    /*pthread_create(&klient, nullptr, hrajKlient, &data);
+    pthread_create(&server, nullptr, hrajServer, &data);
 
     pthread_join(klient, nullptr);
     pthread_join(server, nullptr);
@@ -143,14 +132,24 @@ int Tcp_server::create_server(int argc, char **argv) {
 
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&condServer);
-    pthread_cond_destroy(&condKlient);
+    pthread_cond_destroy(&condKlient);*/
 
 
     while (true) {
 
 
         bzero(buffer, 256);
-        n = read(newsockfd, buffer, 255);
+        n = read(newsockfd, &data, 255);
+
+        data.manazer.getHraciaPlocha().vykresliPlochu();
+        printf("Server zadaj spravu: ");
+        int id = data.manazer.getHraci()[data.aktualneId].vykonajTah();
+        data.manazer.skontrolujFigurky(id);
+        data.manazer.getHraciaPlocha().vykresliPlochu();
+        //printf("prehadzujem na klienta\n");
+        data.aktualneId = data.manazer.getDalsiHrac(data.aktualneId, 2);
+
+        //n = read(newsockfd, buffer, 255);
         if (n < 0) {
             perror("Error reading from socket");
             return 4;
@@ -158,10 +157,11 @@ int Tcp_server::create_server(int argc, char **argv) {
         //printf("Here is the message: %s\n", buffer);
 
         //const char *msg = "I got your message";
-        printf("Please enter a message: ");
-        bzero(buffer, 256);
-        fgets(buffer, 255, stdin);
-        n = write(newsockfd, buffer, strlen(buffer) + 1);
+
+        /*bzero(buffer, 256);
+        fgets(buffer, 255, stdin);*/
+        n = write(newsockfd, &data, sizeof(DATA));
+        //n = write(newsockfd, buffer, strlen(buffer) + 1);
         if (n < 0) {
             perror("Error writing to socket");
             return 5;
