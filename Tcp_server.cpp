@@ -13,10 +13,12 @@ int soketKlienta;
 
 void * Tcp_server::hrajServer(void *args) {
 
-    DATA *d = (DATA *) args;
-    DATA *buffer;
+    data *d = (data *) args;
+    data *buffer;
 
+    pthread_mutex_lock(d->mutex);
     do {
+        pthread_mutex_unlock(d->mutex);
         pthread_mutex_lock(d->mutex);
         while (d->aktualneId != 0) {
             printf("Server caka na klienta\n");
@@ -31,15 +33,13 @@ void * Tcp_server::hrajServer(void *args) {
         pthread_cond_signal(d->condKlient);
 
         buffer = d;
-        pthread_mutex_unlock(d->mutex);
-
-        pthread_mutex_lock(d->mutex);
         send(soketKlienta, &buffer, sizeof(&buffer), 0);
-        //bzero(d, 255);
         recv(soketKlienta, &d, sizeof(&d), 0);
         pthread_mutex_unlock(d->mutex);
 
+        pthread_mutex_lock(d->mutex);
     } while (d->manazer.beziHra());
+    pthread_mutex_unlock(d->mutex);
 
     pthread_exit(nullptr);
 }
@@ -87,9 +87,9 @@ int Tcp_server::create_server(int argc, char **argv) {
     }
     soketKlienta = clientSocket;
 
-    Manazer manazer;
+
     //inicializacia dat zdielanych medzi vlaknami
-    //DATA data;
+    Manazer manazer = Manazer();
     pthread_mutex_t mut;
     pthread_cond_t sCond;
     pthread_cond_t kCond;
@@ -97,15 +97,15 @@ int Tcp_server::create_server(int argc, char **argv) {
     pthread_cond_init(&sCond, nullptr);
     pthread_cond_init(&kCond, nullptr);
 
-    DATA data{
+    data d{
             manazer, 0, 0, 1, &mut, &sCond, &kCond
     };
 
-    send(clientSocket, &data, sizeof(data), 0);
+    send(clientSocket, &d, sizeof(struct data), 0);
 
     //vytvorenie vlakna pre zapisovanie dat do socketu <pthread.h>
     pthread_t thread;
-    pthread_create(&thread, nullptr, hrajServer, &data);
+    pthread_create(&thread, nullptr, hrajServer, &d);
 
 
     pthread_join(thread, nullptr);

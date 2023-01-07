@@ -8,15 +8,15 @@
 
 #include "Manazer.h"
 
-typedef struct {
+struct data{
     Manazer manazer;
     int aktualneId;
     int idServer;
     int idKlient;
-    pthread_mutex_t *mutex;
-    pthread_cond_t *condServer;
-    pthread_cond_t *condKlient;
-} DATA;
+    pthread_mutex_t* mutex;
+    pthread_cond_t* condServer;
+    pthread_cond_t* condKlient;
+};
 
 /*typedef struct {
     int id;
@@ -29,7 +29,7 @@ typedef struct {
 
 class ZdielaneData {
 public:
-    static DATA dataInit(DATA *data);
+    static data dataInit(data *data);
 };
 
 

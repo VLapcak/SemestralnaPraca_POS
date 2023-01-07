@@ -10,11 +10,14 @@
 
 int soketServera;
 
-void* hrajKlient(void *args) {
+static void* hrajKlient(void *args) {
 
-    DATA *d = (DATA *) args;
-    DATA *buffer;
+    data *d = (data *) args;
+    data *buffer;
+    pthread_mutex_lock(d->mutex);
     do {
+        pthread_mutex_unlock(d->mutex);
+
         pthread_mutex_lock(d->mutex);
         recv(soketServera, &buffer, sizeof(&buffer), 0);
         pthread_mutex_unlock(d->mutex);
@@ -32,12 +35,12 @@ void* hrajKlient(void *args) {
         printf("prehadzujem na server\n");
         d->aktualneId = d->manazer.getDalsiHrac(d->aktualneId, 2);
         pthread_cond_signal(d->condServer);
-
+        send(soketServera, &d, sizeof(&d), 0);
         pthread_mutex_unlock(d->mutex);
 
-        send(soketServera, &d, sizeof(&d), 0);
-
+        pthread_mutex_lock(d->mutex);
     } while (d->manazer.beziHra());
+    pthread_mutex_unlock(d->mutex);
 
     pthread_exit(nullptr);
 }
@@ -78,12 +81,13 @@ int main(int argc, char **argv) {
 
     soketServera = sock;
     //inicializacia dat zdielanych medzi vlaknami
-    DATA data;
-    recv(sock, &data, sizeof(data), 0);
+    data d{};
+    recv(sock, &d, sizeof(struct data), 0);
+    //d.manazer.getHraciaPlocha().vykresliPlochu();
 
     //vytvorenie vlakna pre zapisovanie dat do socketu <pthread.h>
     pthread_t thread;
-    pthread_create(&thread, nullptr, hrajKlient, &data);
+    pthread_create(&thread, nullptr, hrajKlient, &d);
 
     //pockame na skoncenie zapisovacieho vlakna <pthread.h>
     pthread_join(thread, nullptr);
