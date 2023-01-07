@@ -8,29 +8,28 @@
 
 #include "Manazer.h"
 
+typedef struct {
+    Manazer manazer;
+    int aktualneId;
+    int idServer;
+    int idKlient;
+    pthread_mutex_t *mutex;
+    pthread_cond_t *condServer;
+    pthread_cond_t *condKlient;
+} DATA;
+
+/*typedef struct {
+    int id;
+    DATA *data;
+} SD;
+typedef struct {
+    int id;
+    DATA *data;
+} KD;*/
+
 class ZdielaneData {
 public:
-    typedef struct {
-        Manazer manazer;
-        int socket;
-        char* userName;
-        int aktualneId;
-        int idServer;
-        int idKlient;
-        pthread_mutex_t *mutex;
-        pthread_cond_t *condServer;
-        pthread_cond_t *condKlient;
-    } DATA;
-    /*typedef struct {
-        int id;
-        DATA *data;
-    } SD;
-    typedef struct {
-        int id;
-        DATA *data;
-    } KD;*/
-
-    void dataInit(DATA *data, const char* userName, int socket);
+    static DATA dataInit(DATA *data);
 };
 
 
