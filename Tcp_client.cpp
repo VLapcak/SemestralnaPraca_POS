@@ -5,44 +5,16 @@
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
+#include <string>
+#include <iostream>
 #include "pthread.h"
-#include "ZdielaneData.h"
+
+using namespace std;
 
 int soketServera;
 
 static void* hrajKlient(void *args) {
 
-    data *d = (data *) args;
-    data *buffer;
-    pthread_mutex_lock(d->mutex);
-    do {
-        pthread_mutex_unlock(d->mutex);
-
-        pthread_mutex_lock(d->mutex);
-        recv(soketServera, &buffer, sizeof(&buffer), 0);
-        pthread_mutex_unlock(d->mutex);
-
-        pthread_mutex_lock(d->mutex);
-        while (d->aktualneId != 1) {
-            printf("Klient caka na server\n");
-            pthread_cond_wait(d->condKlient, d->mutex);
-        }
-        //int id = klientData->id;
-        int id = d->idKlient;
-        d->manazer.getHraci()[id].vykonajTah();
-        d->manazer.skontrolujFigurky(id);
-        d->manazer.getHraciaPlocha().vykresliPlochu();
-        printf("prehadzujem na server\n");
-        d->aktualneId = d->manazer.getDalsiHrac(d->aktualneId, 2);
-        pthread_cond_signal(d->condServer);
-        send(soketServera, &d, sizeof(&d), 0);
-        pthread_mutex_unlock(d->mutex);
-
-        pthread_mutex_lock(d->mutex);
-    } while (d->manazer.beziHra());
-    pthread_mutex_unlock(d->mutex);
-
-    pthread_exit(nullptr);
 }
 
 
@@ -79,7 +51,22 @@ int main(int argc, char **argv) {
         perror("Chyba - connect.");
     }
 
-    soketServera = sock;
+    char buffer[256];
+    const char* msg;
+    string s;
+
+    do {
+        bzero(buffer,sizeof(buffer));
+        recv(sock, buffer, sizeof(buffer), 0);
+        printf("%s\n", buffer);
+
+        bzero(buffer,sizeof(buffer));
+        fgets(buffer, 255, stdin);
+        send(sock, buffer, sizeof(buffer), 0);
+
+    } while (strcmp(buffer, "end") != 0);
+
+    /*soketServera = sock;
     //inicializacia dat zdielanych medzi vlaknami
     data d{};
     recv(sock, &d, sizeof(struct data), 0);
@@ -90,7 +77,7 @@ int main(int argc, char **argv) {
     pthread_create(&thread, nullptr, hrajKlient, &d);
 
     //pockame na skoncenie zapisovacieho vlakna <pthread.h>
-    pthread_join(thread, nullptr);
+    pthread_join(thread, nullptr);*/
     //data_destroy(&data);
 
     //uzavretie socketu <unistd.h>

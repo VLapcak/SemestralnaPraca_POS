@@ -33,7 +33,7 @@ char Hrac::getFarbu() {
 }
 
 void Hrac::vykonajTah() {
-    int cislo = 0;
+    /*int cislo = 0;
     int idFigurky = 0;
 
 
@@ -140,7 +140,7 @@ void Hrac::vykonajTah() {
         if (figurky[i].getJeVDomceku()) {
             pocetFigurokDomcek++;
         }
-    }
+    }*/
 }
 
 int Hrac::skontrolujCiJeNaHP(int idFigurky) {
@@ -165,7 +165,7 @@ bool Hrac::suFigurkyNaHP() {
 }
 
 int Hrac::hod() {
-    printf("%s", "Hod kockou >> ");
+    /*printf("%s", "Hod kockou >> ");
     string s;
     cin >> s;
     while (s != "hod") {
@@ -175,7 +175,7 @@ int Hrac::hod() {
     }
     int cislo = kocka.getCislo();
     printf("%s %d\n\n", "Hodil si:", cislo);
-    return cislo;
+    return cislo;*/
 }
 
 int Hrac::vyberFigurku() {
