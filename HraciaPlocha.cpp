@@ -45,23 +45,47 @@ void HraciaPlocha::vykresliPlochu() {
     for (int i = 0; i < velkost; ++i) {
 
         for (int j = 0; j < velkost; ++j) {
-            if (aktualnaPlocha[j][i] == 1)
+            if (aktualnaPlocha[j][i] == 1) {
+                vypisPlochy += "[  ]";
                 printf("%s", "[  ]");
-            else if (aktualnaPlocha[j][i] == 2 || aktualnaPlocha[j][i] == 3)
+            }
+            else if (aktualnaPlocha[j][i] == 2 || aktualnaPlocha[j][i] == 3) {
+                vypisPlochy += "(  )";
                 printf("%s", "(  )");
+            }
 
-            else if (aktualnaPlocha[j][i] > 50 && aktualnaPlocha[j][i] < 60)
+            else if (aktualnaPlocha[j][i] > 50 && aktualnaPlocha[j][i] < 60) {
+                vypisPlochy += "(C";
+                vypisPlochy += to_string((aktualnaPlocha[j][i] % 50));
+                vypisPlochy += ")";
                 printf("%s%d%s", "(C", aktualnaPlocha[j][i] % 50, ")");
-            else if (aktualnaPlocha[j][i] > 60 && aktualnaPlocha[j][i] < 70)
+            }
+            else if (aktualnaPlocha[j][i] > 60 && aktualnaPlocha[j][i] < 70) {
+                vypisPlochy += "(M";
+                vypisPlochy += to_string((aktualnaPlocha[j][i] % 60));
+                vypisPlochy += ")";
                 printf("%s%d%s", "(M", aktualnaPlocha[j][i] % 60, ")");
-            else if (aktualnaPlocha[j][i] > 70 && aktualnaPlocha[j][i] < 80)
+            }
+            else if (aktualnaPlocha[j][i] > 70 && aktualnaPlocha[j][i] < 80) {
+                vypisPlochy += "(Z";
+                vypisPlochy += to_string((aktualnaPlocha[j][i] % 70));
+                vypisPlochy += ")";
                 printf("%s%d%s", "(Z", aktualnaPlocha[j][i] % 70, ")");
-            else if (aktualnaPlocha[j][i] > 80 && aktualnaPlocha[j][i] < 90)
+            }
+            else if (aktualnaPlocha[j][i] > 80 && aktualnaPlocha[j][i] < 90) {
+                vypisPlochy += "(B";
+                vypisPlochy += to_string((aktualnaPlocha[j][i] % 80));
+                vypisPlochy += ")";
                 printf("%s%d%s", "(B", aktualnaPlocha[j][i] % 80, ")");
-            else
+            }
+            else {
+                vypisPlochy += "    ";
                 printf("%s", "    ");
+            }
         }
+        vypisPlochy += "\n";
         printf("\n");
+
     }
 }
 
@@ -110,6 +134,10 @@ void HraciaPlocha::setHracov(Hrac *h) {
     for (int i = 0; i < 4; ++i) {
         hraci[i] = h[i];
     }
+}
+
+std::string HraciaPlocha::getPlocha() {
+    return vypisPlochy;
 }
 
 

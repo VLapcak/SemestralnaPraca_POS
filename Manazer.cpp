@@ -96,9 +96,6 @@ Hrac *Manazer::getHraci() {
     return hraci;
 }
 
-HraciaPlocha Manazer::getHraciaPlocha() {
-    return hp;
-}
 
 int Manazer::getDalsiHrac(int aktualneID, int maxHracov) {
     if (aktualneID < maxHracov - 1)
@@ -108,4 +105,8 @@ int Manazer::getDalsiHrac(int aktualneID, int maxHracov) {
 
     printf("\n%s %c %s", "-------------Na rade je", hraci[aktualneID].getFarbu(), "hrac-------------- \n");
     return aktualneID;
+}
+
+std::string Manazer::getPlocha() {
+    return hp.getPlocha();
 }

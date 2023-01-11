@@ -51,6 +51,7 @@ private:
 
     int aktualnaPlocha[11][11]{0};
 
+    std::string vypisPlochy;
 
 
 public:
@@ -59,6 +60,7 @@ public:
     void setZakladnaPlocha();
     void vykresliPlochu();
     int* getPoziciuZakladne(char farba, int idFigurky);
+    std::string getPlocha();
 
 };
 

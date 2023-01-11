@@ -9,15 +9,18 @@
 #include "Manazer.h"
 #include "Kocka.h"
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
-void * Tcp_server::hrajServer(void *args) {
+#define VELKOSTBUFFERA 1024
 
+void *Tcp_server::hrajServer(void *args) {
 
+    return nullptr;
 }
 
-int Tcp_server::create_server(int argc, char **argv) {
+int Tcp_server::create_server(int argc, char **argv, Manazer manazer) {
 
     if (argc < 3) {
         perror("Server je nutne spustit s nasledujucimi argumentmi: port pouzivatel.");
@@ -59,27 +62,18 @@ int Tcp_server::create_server(int argc, char **argv) {
         perror("Chyba - accept.");
     }
 
-    char buffer[256];
-    //const char* msg;
+    char buffer[VELKOSTBUFFERA];
+    bzero(buffer, VELKOSTBUFFERA);
     string s;
+    idAktualnehoHraca = 0;
+    string akutualnaPlocha = manazer.getPlocha();
+
+    posliSpravu(akutualnaPlocha, clientSocket);
+    prijmiSpravu(buffer, clientSocket);
+
 
     do {
-
-        bzero(buffer, 256);
-        //recv(clientSocket, buffer, sizeof(buffer), 0);
-        hod(buffer, clientSocket);
-
-
-
-        /*//cin >> s;
-        fgets(buffer, 255, stdin);
-        //msg = s.c_str();
-        send(clientSocket, buffer, sizeof(buffer), 0);
-        //printf("OK send\n");
-        bzero(&buffer, 256);
-        recv(clientSocket, &buffer, sizeof(buffer), 0);
-        //printf("OK recv\n");
-        printf("%s\n", buffer);*/
+        overenieVstupu(buffer, clientSocket, idAktualnehoHraca);
 
     } while (strcmp(buffer, "end") != 0);
     /*soketKlienta = clientSocket;
@@ -120,32 +114,38 @@ int Tcp_server::create_server(int argc, char **argv) {
 }
 
 Tcp_server::Tcp_server(int argc, char **argv) {
-    create_server(argc, argv);
+    Manazer manazer = Manazer();
+    Hrac *h = manazer.getHraci();
+    for (int i = 0; i < 4; ++i) {
+        hraci[i] = h[i];
+    }
+    create_server(argc, argv, manazer);
 }
 
-void Tcp_server::overenieVstupu(char *buffer, int socket) {
-/*    int cislo = 0;
+void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
+    int cislo = 0;
     int idFigurky = 0;
 
+    Figurka figurky[4];
+    for (int i = 0; i < 4; ++i) {
+        figurky[i] = hraci[idHraca].getFigurka(i);
+    }
 
-    if (!suFigurkyNaHP()) {
-        //Hrac hadze maximalne 3x dovtedy kym nehodi 6
-        //ak hodi 6 tak sa postavi na startovaciu poziciu a hadze znovu
+    if (!hraci[idHraca].suFigurkyNaHP()) {
         int pocetHodov = 3;
         while (pocetHodov > 0) {
-            cislo = hod();
+            cislo = hod(buffer, socket);
             //cislo = 6;
             //cout << "HODIL som 6" << endl;
             if (cislo == 6) {
-                //idFigurky = vyberFigurku();
                 while (cislo == 6) {
-                    idFigurky = vyberFigurku();
+                    idFigurky = vyberFigurku(socket);
                     bool validnyTah = false;
 
                     while (!validnyTah) {
                         int pocitadlo = 0;
                         if (figurky[idFigurky - 1].getJeVZakladni()) {
-                            for (int i = 0; i < pocetFigurok; ++i) {
+                            for (int i = 0; i < 4; ++i) {
                                 if (i != idFigurky - 1) {
                                     if (figurky[i].getJeNaStartovacejPozicii()) {
                                         pocitadlo++;
@@ -154,26 +154,26 @@ void Tcp_server::overenieVstupu(char *buffer, int socket) {
                             }
                             if (pocitadlo > 0) {
                                 printf("%s", "<S danou figurkou sa nemozno pohnut> \n");
-                                idFigurky = vyberFigurku();
+                                idFigurky = vyberFigurku(socket);
                             } else {
                                 figurky[idFigurky - 1].setNaStartovaciuPoziciu();
                                 validnyTah = true;
                             }
                         } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
                                    figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                            overPozicieFigurok(cislo, idFigurky);
+                            hraci[idHraca].overPozicieFigurok(cislo, idFigurky);
                             validnyTah = true;
                         } else if (figurky[idFigurky - 1].getJeVDomceku()) {
                             printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
-                            idFigurky = vyberFigurku();
+                            idFigurky = vyberFigurku(socket);
                         }
                     }
-                    cislo = hod();
+                    cislo = hod(buffer, socket);
 
                     pocetHodov = 0;
                 }
-                idFigurky = vyberFigurku();
-                idFigurky = skontrolujCiJeNaHP(idFigurky);
+                idFigurky = vyberFigurku(socket);
+                idFigurky = hraci[idHraca].skontrolujCiJeNaHP(idFigurky);
                 figurky[idFigurky - 1].posunOPolicka(cislo);
             }
             pocetHodov--;
@@ -181,16 +181,16 @@ void Tcp_server::overenieVstupu(char *buffer, int socket) {
     } else { //ak je uz nejaka figurka na hracej ploche
 
         // ak je nejaka figurka na SP tak tam ina nemoze ist
-        cislo = hod();
+        cislo = hod(buffer, socket);
         if (cislo == 6) {
             //idFigurky = vyberFigurku();
             while (cislo == 6) {
                 bool validnyTah = false;
-                idFigurky = vyberFigurku();
+                idFigurky = vyberFigurku(socket);
                 while (!validnyTah) {
                     int pocitadlo = 0;
                     if (figurky[idFigurky - 1].getJeVZakladni()) {
-                        for (int i = 0; i < pocetFigurok; ++i) {
+                        for (int i = 0; i < 4; ++i) {
                             if (i != idFigurky - 1) {
                                 if (figurky[i].getJeNaStartovacejPozicii()) {
                                     pocitadlo++;
@@ -199,7 +199,7 @@ void Tcp_server::overenieVstupu(char *buffer, int socket) {
                         }
                         if (pocitadlo > 0) {
                             printf("%s", "<S danou figurkou sa nemozno pohnut> \n");
-                            idFigurky = vyberFigurku();
+                            idFigurky = vyberFigurku(socket);
                         } else {
                             figurky[idFigurky - 1].setNaStartovaciuPoziciu();
                             validnyTah = true;
@@ -207,55 +207,72 @@ void Tcp_server::overenieVstupu(char *buffer, int socket) {
 
                     } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
                                figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                        overPozicieFigurok(cislo, idFigurky);
+                        hraci[idHraca].overPozicieFigurok(cislo, idFigurky);
                         validnyTah = true;
                     } else if (figurky[idFigurky - 1].getJeVDomceku()) {
                         printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
-                        idFigurky = vyberFigurku();
+                        idFigurky = vyberFigurku(socket);
                     }
                 }
-                cislo = hod();
+                cislo = hod(buffer, socket);
             }
-            idFigurky = vyberFigurku();
-            idFigurky = skontrolujCiJeNaHP(idFigurky);
-            overPozicieFigurok(cislo, idFigurky);
+            idFigurky = vyberFigurku(socket);
+            idFigurky = hraci[idHraca].skontrolujCiJeNaHP(idFigurky);
+            hraci[idHraca].overPozicieFigurok(cislo, idFigurky);
         } else {
-            idFigurky = vyberFigurku();
-            idFigurky = skontrolujCiJeNaHP(idFigurky);
-            overPozicieFigurok(cislo, idFigurky);
+            idFigurky = vyberFigurku(socket);
+            idFigurky = hraci[idHraca].skontrolujCiJeNaHP(idFigurky);
+            hraci[idHraca].overPozicieFigurok(cislo, idFigurky);
         }
 
     }
-    pocetFigurokDomcek = 0;
-    for (int i = 0; i < pocetFigurok; ++i) {
-        if (figurky[i].getJeVDomceku()) {
-            pocetFigurokDomcek++;
-        }
-    }*/
+    hraci[idHraca].overPocetFigurokDomcek();
 }
 
 int Tcp_server::hod(char *buffer, int socket) {
-    //printf("%s", "Hod kockou >> ");
-    const char* msg = "Hod kockou >> ";
-    send(socket, msg, strlen(msg) + 1, 0);
-    bzero(buffer, 256);
-    recv(socket, buffer, sizeof(buffer), 0);
-    while (strcmp(buffer, "hod") == 0) {
-        bzero(buffer, 256);
-        msg = "<Nespravny prikaz>\n Hod kockou >> ";
-        send(socket, msg, strlen(msg) + 1, 0);
+    posliSpravu("Hod kockou >> ", socket);
 
+    prijmiSpravu(buffer, socket);
 
-        recv(socket, buffer, sizeof(buffer), 0);
+    string porovnanie = "hod";
+    while (porovnanie.compare(buffer) != 0) {
+        posliSpravu("<Nespravny prikaz>\nHod kockou >> ", socket);
 
-        printf("%s\n", buffer);
+        prijmiSpravu(buffer, socket);
     }
 
-    bzero(buffer, 256);
     int cislo = kocka.getCislo();
     string s = "Hodil si: " + to_string(cislo);
-    msg = s.c_str();
-    send(socket, msg, strlen(msg) + 1, 0);
+    posliSpravu(s, socket);
     return cislo;
+}
+
+int Tcp_server::vyberFigurku(int socket) {
+    const char *msg;
+    msg = "Vyber figurku >> ";
+    send(socket, msg, strlen(msg) + 1, 0);
+    int idFigurky;
+    cin >> idFigurky;
+
+    while ((idFigurky - 1) > 3 || (idFigurky - 1) < 0) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        printf("%s", "<Figurka neexistuje> \n");
+        printf("%s", "Vyber figurku >> ");
+        cin >> idFigurky;
+    }
+
+    return idFigurky;
+}
+
+void Tcp_server::posliSpravu(string sprava, int socket) {
+    send(socket, sprava.c_str(), strlen(sprava.c_str()) + 1, 0);
+
+}
+
+void Tcp_server::prijmiSpravu(char* buffer, int socket) {
+    bzero(buffer, VELKOSTBUFFERA);
+    recv(socket, buffer, VELKOSTBUFFERA, 0);
+    printf("%s\n", buffer);
 }
 

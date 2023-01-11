@@ -11,12 +11,21 @@
 
 using namespace std;
 
-int soketServera;
+#define VELKOSTBUFFERA 1024
 
 static void* hrajKlient(void *args) {
 
 }
 
+void posliSpravu(const char* sprava, int socket) {
+    send(socket, sprava, strlen(sprava) + 1, 0);
+}
+
+void prijmiSpravu(char* buffer, int socket) {
+    bzero(buffer, VELKOSTBUFFERA);
+    recv(socket, buffer, VELKOSTBUFFERA, 0);
+    printf("%s\n", buffer);
+}
 
 int main(int argc, char **argv) {
     if (argc < 4) {
@@ -51,36 +60,21 @@ int main(int argc, char **argv) {
         perror("Chyba - connect.");
     }
 
-    char buffer[256];
-    const char* msg;
+    char buffer[VELKOSTBUFFERA];
+    bzero(buffer, VELKOSTBUFFERA);
     string s;
+    prijmiSpravu(buffer, sock);
+    posliSpravu("[HRA]: Klient dostal plochu", sock);
 
     do {
-        bzero(buffer,sizeof(buffer));
-        recv(sock, buffer, sizeof(buffer), 0);
-        printf("%s\n", buffer);
+        prijmiSpravu(buffer, sock);
 
-        bzero(buffer,sizeof(buffer));
-        fgets(buffer, 255, stdin);
+        bzero(buffer,VELKOSTBUFFERA);
+        fgets(buffer, VELKOSTBUFFERA-1, stdin);
         send(sock, buffer, sizeof(buffer), 0);
 
     } while (strcmp(buffer, "end") != 0);
 
-    /*soketServera = sock;
-    //inicializacia dat zdielanych medzi vlaknami
-    data d{};
-    recv(sock, &d, sizeof(struct data), 0);
-    //d.manazer.getHraciaPlocha().vykresliPlochu();
-
-    //vytvorenie vlakna pre zapisovanie dat do socketu <pthread.h>
-    pthread_t thread;
-    pthread_create(&thread, nullptr, hrajKlient, &d);
-
-    //pockame na skoncenie zapisovacieho vlakna <pthread.h>
-    pthread_join(thread, nullptr);*/
-    //data_destroy(&data);
-
-    //uzavretie socketu <unistd.h>
     close(sock);
 
     return (EXIT_SUCCESS);

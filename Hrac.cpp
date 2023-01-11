@@ -273,4 +273,13 @@ bool Hrac::dostupnaVZakladni() {
     return false;
 }
 
+void Hrac::overPocetFigurokDomcek() {
+    pocetFigurokDomcek = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (figurky[i].getJeVDomceku()) {
+            pocetFigurokDomcek++;
+        }
+    }
+}
+
 

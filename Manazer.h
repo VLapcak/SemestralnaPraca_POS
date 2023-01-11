@@ -22,6 +22,6 @@ public:
     bool beziHra();
     void skontrolujFigurky(int id);
     Hrac* getHraci();
-    HraciaPlocha getHraciaPlocha();
+    std::string getPlocha();
 };
 #endif //SEMESTRALKA_LAPCAK_IHRING_MANAZER_H

@@ -14,20 +14,21 @@ private:
     Kocka kocka;
     int vyberFigurku();
     int hod();
-    bool suFigurkyNaHP();
-    void overPozicieFigurok(int pocetKrokov, int id);
-    int skontrolujCiJeNaHP(int idFigurky);
     bool dostupnaVZakladni();
 
 
 public:
     Hrac();
     void setFarbu(char farba);
+    void overPocetFigurokDomcek();
     char getFarbu();
     Figurka getFigurka(int id);
     void vykonajTah();
     bool getVyhralHru();
+    bool suFigurkyNaHP();
     void setFigurkeZakladnu(int id);
+    void overPozicieFigurok(int pocetKrokov, int id);
+    int skontrolujCiJeNaHP(int idFigurky);
 };
 
 
