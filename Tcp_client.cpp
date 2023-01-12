@@ -69,9 +69,13 @@ int main(int argc, char **argv) {
     do {
         prijmiSpravu(buffer, sock);
 
+        //posliSpravu("[KLIENT] hodil kockou", sock);
+
         bzero(buffer,VELKOSTBUFFERA);
         fgets(buffer, VELKOSTBUFFERA-1, stdin);
         send(sock, buffer, sizeof(buffer), 0);
+
+
 
     } while (strcmp(buffer, "end") != 0);
 
