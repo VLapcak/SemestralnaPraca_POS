@@ -19,7 +19,7 @@ public:
     Tcp_server(int argc, char *argv[]);
     void overenieVstupu(char* buffer, int socket, int idHraca);
     int hod(char* buffer, int socket);
-    int vyberFigurku(int socket);
+    int vyberFigurku(char* buffer, int socket);
 };
 
 

@@ -15,6 +15,7 @@ using namespace std;
 
 static void* hrajKlient(void *args) {
 
+    return nullptr;
 }
 
 void posliSpravu(const char* sprava, int socket) {
@@ -62,7 +63,6 @@ int main(int argc, char **argv) {
 
     char buffer[VELKOSTBUFFERA];
     bzero(buffer, VELKOSTBUFFERA);
-    string s;
     prijmiSpravu(buffer, sock);
     posliSpravu("[HRA]: Klient dostal plochu", sock);
 
@@ -71,7 +71,8 @@ int main(int argc, char **argv) {
 
         bzero(buffer,VELKOSTBUFFERA);
         fgets(buffer, VELKOSTBUFFERA-1, stdin);
-        send(sock, buffer, sizeof(buffer), 0);
+        send(sock, buffer, VELKOSTBUFFERA, 0);
+        //prijmiSpravu(buffer, sock);
 
     } while (strcmp(buffer, "end") != 0);
 
