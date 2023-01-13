@@ -54,13 +54,38 @@ int Tcp_server::create_server(int argc, char **argv, Manazer manazer) {
     //server caka na pripojenie klienta <sys/socket.h>
     struct sockaddr_in clientAddress;
     socklen_t clientAddressLength = sizeof(clientAddress);
-    int clientSocket = accept(serverSocket, (struct sockaddr *) &clientAddress, &clientAddressLength);
 
-    //uzavretie pasivneho socketu <unistd.h>
-    close(serverSocket);
-    if (clientSocket < 0) {
-        perror("Chyba - accept.");
+
+    // vytvorit vlakno pre server
+    pthread_t serverVlakno;
+    //pthread_create(serverVlakno, nullptr, ,);
+
+
+    int pocetKlientov = 0;
+    int maxKlinetov = 2;
+    int clientSockets[4]{0};
+    while (pocetKlientov < maxKlinetov) {
+         int newClient = accept(serverSocket, (struct sockaddr *) &clientAddress, &clientAddressLength);
+        for (int i = 0; i < maxKlinetov; ++i) {
+            if (clientSockets[i] == 0) {
+                clientSockets[i] = newClient;
+                pocetKlientov++;
+                break;
+            }
+        }
+        //uzavretie pasivneho socketu <unistd.h>
+
+        if (clientSockets[pocetKlientov] < 0) {
+            perror("Chyba - accept.");
+        }
+        printf("Aktualny pocet hracov je %d z %d\n", pocetKlientov, maxKlinetov);
+
     }
+    close(serverSocket);
+
+
+    // vytvorit vlakna klientov
+
 
     char buffer[VELKOSTBUFFERA];
     bzero(buffer, VELKOSTBUFFERA);
@@ -68,49 +93,26 @@ int Tcp_server::create_server(int argc, char **argv, Manazer manazer) {
     idAktualnehoHraca = 0;
     string akutualnaPlocha = manazer.getPlocha();
 
-    posliSpravu(akutualnaPlocha, clientSocket);
-    prijmiSpravu(buffer, clientSocket);
+    posliSpravu(akutualnaPlocha, clientSockets[idAktualnehoHraca]);
+    prijmiSpravu(buffer, clientSockets[idAktualnehoHraca]);
 
 
     do {
-        overenieVstupu(buffer, clientSocket, idAktualnehoHraca);
-        posliSpravu(akutualnaPlocha, clientSocket);
+        overenieVstupu(buffer, clientSockets[idAktualnehoHraca], idAktualnehoHraca);
+
+        akutualnaPlocha = manazer.getPlocha();
+        posliSpravu(akutualnaPlocha, clientSockets[idAktualnehoHraca]);
         idAktualnehoHraca++;
+        if (idAktualnehoHraca == pocetKlientov)
+            idAktualnehoHraca = 0;
 
     } while (strcmp(buffer, "end") != 0);
-    /*soketKlienta = clientSocket;
 
 
-    //inicializacia dat zdielanych medzi vlaknami
-    Manazer manazer = Manazer();
-    pthread_mutex_t mut;
-    pthread_cond_t sCond;
-    pthread_cond_t kCond;
-    pthread_mutex_init(&mut, nullptr);
-    pthread_cond_init(&sCond, nullptr);
-    pthread_cond_init(&kCond, nullptr);
+    for (int i = 0; i < 4; ++i) {
+        close(clientSockets[i]);
+    }
 
-    data d{
-            manazer, 0, 0, 1, &mut, &sCond, &kCond
-    };
-
-    send(clientSocket, &d, sizeof(struct data), 0);
-
-    //vytvorenie vlakna pre zapisovanie dat do socketu <pthread.h>
-    pthread_t thread;
-    pthread_create(&thread, nullptr, hrajServer, &d);
-
-
-    pthread_join(thread, nullptr);
-
-    //pockame na skoncenie zapisovacieho vlakna <pthread.h>
-
-    pthread_mutex_destroy(&mut);
-    pthread_cond_destroy(&sCond);
-    pthread_cond_destroy(&kCond);*/
-
-    //uzavretie socketu <unistd.h>
-    close(clientSocket);
 
     return (EXIT_SUCCESS);
 }
@@ -119,8 +121,8 @@ Tcp_server::Tcp_server(int argc, char **argv) {
     Manazer manazer = Manazer();
     Hrac *h = manazer.getHraci();
     for (int i = 0; i < 4; ++i) {
-        hraci[i] = h[i];
-        hraci[i].setFarbu('F');
+        hraci[i] = &h[i];
+        //hraci[i]->setFarbu('F');
     }
     create_server(argc, argv, manazer);
 }
@@ -131,10 +133,10 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
 
     Figurka figurky[4];
     for (int i = 0; i < 4; ++i) {
-        figurky[i] = hraci[idHraca].getFigurka(i);
+        figurky[i] = hraci[idHraca]->getFigurka(i);
     }
 
-    if (!hraci[idHraca].suFigurkyNaHP()) {
+    if (!hraci[idHraca]->suFigurkyNaHP()) {
         int pocetHodov = 3;
         while (pocetHodov > 0) {
             cislo = hod(buffer, socket);
@@ -164,7 +166,7 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
                             }
                         } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
                                    figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                            hraci[idHraca].overPozicieFigurok(cislo, idFigurky);
+                            hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
                             validnyTah = true;
                         } else if (figurky[idFigurky - 1].getJeVDomceku()) {
                             printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
@@ -176,7 +178,7 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
                     pocetHodov = 0;
                 }
                 idFigurky = vyberFigurku(buffer, socket);
-                idFigurky = hraci[idHraca].skontrolujCiJeNaHP(idFigurky);
+                idFigurky = hraci[idHraca]->skontrolujCiJeNaHP(idFigurky);
                 figurky[idFigurky - 1].posunOPolicka(cislo);
             }
             pocetHodov--;
@@ -210,7 +212,7 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
 
                     } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
                                figurky[idFigurky - 1].getJeNaHracejPloche()) {
-                        hraci[idHraca].overPozicieFigurok(cislo, idFigurky);
+                        hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
                         validnyTah = true;
                     } else if (figurky[idFigurky - 1].getJeVDomceku()) {
                         posliSpravu("<Figurka sa nemoze pohnut z domceka> \n", socket);
@@ -220,32 +222,32 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
                 cislo = hod(buffer, socket);
             }
             idFigurky = vyberFigurku(buffer, socket);
-            idFigurky = hraci[idHraca].skontrolujCiJeNaHP(idFigurky);
-            hraci[idHraca].overPozicieFigurok(cislo, idFigurky);
+            idFigurky = hraci[idHraca]->skontrolujCiJeNaHP(idFigurky);
+            hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
         } else {
             idFigurky = vyberFigurku(buffer, socket);
-            idFigurky = hraci[idHraca].skontrolujCiJeNaHP(idFigurky);
-            hraci[idHraca].overPozicieFigurok(cislo, idFigurky);
+            idFigurky = hraci[idHraca]->skontrolujCiJeNaHP(idFigurky);
+            hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
         }
 
     }
-    hraci[idHraca].overPocetFigurokDomcek();
+    hraci[idHraca]->overPocetFigurokDomcek();
 }
 
-int Tcp_server::hod(char* buffer, int socket) {
+int Tcp_server::hod(char *buffer, int socket) {
     posliSpravu("Hod kockou >> ", socket);
 
     prijmiSpravu(buffer, socket);
 
     string bufferString;
-    for (int i = 0; i < 3; ++i) {
+    for (int i = 0; i < 4; ++i) {
         bufferString += buffer[i];
     }
-    while (bufferString != "hod") {
+    while (bufferString != "hod\n") {
         posliSpravu("<Nespravny prikaz>\nHod kockou >> ", socket);
         bufferString = "";
         prijmiSpravu(buffer, socket);
-        for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 4; ++i) {
             bufferString += buffer[i];
         }
     }
@@ -255,7 +257,7 @@ int Tcp_server::hod(char* buffer, int socket) {
     return cislo;
 }
 
-int Tcp_server::vyberFigurku(char* buffer, int socket) {
+int Tcp_server::vyberFigurku(char *buffer, int socket) {
     posliSpravu("Vyber figurku >> ", socket);
     int idFigurky;
     prijmiSpravu(buffer, socket);
@@ -277,7 +279,7 @@ void Tcp_server::posliSpravu(string sprava, int socket) {
 
 }
 
-void Tcp_server::prijmiSpravu(char* buffer, int socket) {
+void Tcp_server::prijmiSpravu(char *buffer, int socket) {
     bzero(buffer, VELKOSTBUFFERA);
     recv(socket, buffer, VELKOSTBUFFERA, 0);
     printf("%s\n", buffer);

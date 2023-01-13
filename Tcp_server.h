@@ -10,7 +10,7 @@ class Tcp_server {
     int create_server(int argc, char *argv[], Manazer manazer);
     static void *hrajServer(void *args);
     Kocka kocka;
-    Hrac hraci[4];
+    Hrac* hraci[4];
     int idAktualnehoHraca;
     void posliSpravu(std::string sprava, int socket);
     void prijmiSpravu(char* buffer, int socket);
