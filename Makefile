@@ -1,13 +1,10 @@
 all: server klient
 
-server: main.o Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o ZdielaneData.o Tcp_server.o
-	g++ main.o Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o ZdielaneData.o Tcp_server.o -o server -lpthread
+server: Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o Tcp_server.o
+	g++ Manazer.o Kocka.o HraciaPlocha.o Hrac.o Figurka.o Tcp_server.o -o server -lpthread
 
 klient: Tcp_client.o
 	g++ Tcp_client.o -o klient -lpthread
-
-main.o: main.cpp
-	g++ -c main.cpp
 
 Tcp_server.o: Tcp_server.cpp
 	g++ -c Tcp_server.cpp

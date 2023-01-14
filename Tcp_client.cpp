@@ -14,11 +14,11 @@ using namespace std;
 #define VELKOSTBUFFERA 1024
 
 
-void posliSpravu(const char* sprava, int socket) {
+void posliSpravu(const char *sprava, int socket) {
     send(socket, sprava, strlen(sprava) + 1, 0);
 }
 
-void prijmiSpravu(char* buffer, int socket) {
+void prijmiSpravu(char *buffer, int socket) {
     bzero(buffer, VELKOSTBUFFERA);
     recv(socket, buffer, VELKOSTBUFFERA, 0);
     printf("%s\n", buffer);
@@ -26,12 +26,17 @@ void prijmiSpravu(char* buffer, int socket) {
 
 typedef struct data {
     int socket;
-    char* buffer;
-}DATA;
+    char *buffer;
 
-static void* komunikuj(void *args) {
+    pthread_mutex_t *mutex;
+    //pthread_cond_t* cond_klient;
+} DATA;
+
+static void *komunikuj(void *args) {
     DATA *data = (DATA *) args;
 
+
+    pthread_mutex_lock(data->mutex);
     prijmiSpravu(data->buffer, data->socket);
     posliSpravu("[HRA]: Klient dostal plochu", data->socket);
 
@@ -39,15 +44,22 @@ static void* komunikuj(void *args) {
     for (int i = 0; i < 4; ++i) {
         bufferString += data->buffer[i];
     }
+
     while (bufferString != "end\n") {
+        pthread_mutex_unlock(data->mutex);
+
+        pthread_mutex_lock(data->mutex);
         prijmiSpravu(data->buffer, data->socket);
 
-        bzero(data->buffer,VELKOSTBUFFERA);
-        fgets(data->buffer, VELKOSTBUFFERA-1, stdin);
+        bzero(data->buffer, VELKOSTBUFFERA);
+        fgets(data->buffer, VELKOSTBUFFERA - 1, stdin);
         send(data->socket, data->buffer, VELKOSTBUFFERA, 0);
         //prijmiSpravu(buffer, sock);
+        pthread_mutex_unlock(data->mutex);
 
+        pthread_mutex_lock(data->mutex);
     }
+    pthread_mutex_unlock(data->mutex);
 
     pthread_exit(nullptr);
 }
@@ -76,7 +88,7 @@ int main(int argc, char **argv) {
 
     //definovanie adresy servera <arpa/inet.h>
     struct sockaddr_in serverAddress;
-    bzero((char *) &serverAddress, sizeof (serverAddress));
+    bzero((char *) &serverAddress, sizeof(serverAddress));
     serverAddress.sin_family = AF_INET;
     bcopy((char *) server->h_addr, (char *) &serverAddress.sin_addr.s_addr, server->h_length);
     serverAddress.sin_port = htons(port);
@@ -87,20 +99,12 @@ int main(int argc, char **argv) {
 
     char buffer[VELKOSTBUFFERA];
     bzero(buffer, VELKOSTBUFFERA);
-    /*prijmiSpravu(buffer, sock);
-    posliSpravu("[HRA]: Klient dostal plochu", sock);
 
-    do {
-        prijmiSpravu(buffer, sock);
-
-        bzero(buffer,VELKOSTBUFFERA);
-        fgets(buffer, VELKOSTBUFFERA-1, stdin);
-        send(sock, buffer, VELKOSTBUFFERA, 0);
-        //prijmiSpravu(buffer, sock);
-
-    } while (strcmp(buffer, "end") != 0);*/
-
-    DATA data = {sock, buffer};
+    pthread_mutex_t mutex;
+    //pthread_cond_t cond_klient;
+    pthread_mutex_init(&mutex, nullptr);
+    //pthread_cond_init(&cond_klient, nullptr);
+    DATA data = {sock, buffer, &mutex};
 
     pthread_t klientVlakno;
     pthread_create(&klientVlakno, nullptr, komunikuj, &data);

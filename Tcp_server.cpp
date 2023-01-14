@@ -5,7 +5,6 @@
 #include <cstring>
 #include <unistd.h>
 #include <netdb.h>
-#include "Tcp_server.h"
 #include "Manazer.h"
 #include "Kocka.h"
 #include <iostream>
@@ -16,6 +15,10 @@
 using namespace std;
 
 #define VELKOSTBUFFERA 1024
+
+Hrac* hraci[4];
+Kocka kocka;
+int idAktualnehoHraca;
 
 typedef struct data {
     Manazer manazer;
@@ -35,190 +38,76 @@ typedef struct dataKlient {
     DATA *data;
 }DATAKLIENT;
 
-void *Tcp_server::obsluhaKlienta(void *args) {
-    DATAKLIENT *dataklient = (DATAKLIENT *) args;
 
 
+void posliSpravu(string sprava, int socket) {
+    send(socket, sprava.c_str(), strlen(sprava.c_str()) + 1, 0);
 
-    /*pthread_mutex_lock(dataklient->data->mutex);
-    while (dataklient->id != dataklient->data->idAktualnehoHraca) {
-        posliSpravu("Nie si na ťahu! Čakaj, dokým neprídeš na rad.\n", dataklient->data->socket[dataklient->id]);
-        pthread_cond_wait(dataklient->data->cond_klient, dataklient->data->mutex);
-    }
-    pthread_cond_broadcast(dataklient->data->cond_klient);
-    pthread_mutex_unlock(dataklient->data->mutex);*/
+}
+
+void prijmiSpravu(char *buffer, int socket) {
+    bzero(buffer, VELKOSTBUFFERA);
+    recv(socket, buffer, VELKOSTBUFFERA, 0);
+    printf("%s\n", buffer);
+}
 
 
-    string akutualnaPlocha = dataklient->data->manazer.getPlocha();
+int hod(char *buffer, int socket) {
+    posliSpravu("Hod kockou >> ", socket);
 
-    posliSpravu(akutualnaPlocha, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
-    prijmiSpravu(dataklient->data->buffer, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
-
+    prijmiSpravu(buffer, socket);
 
     string bufferString;
     for (int i = 0; i < 4; ++i) {
-        bufferString += dataklient->data->buffer[i];
+        bufferString += buffer[i];
     }
-    while (bufferString != "end\n") {
-        overenieVstupu(dataklient->data->buffer, dataklient->data->socket[dataklient->data->idAktualnehoHraca], dataklient->data->idAktualnehoHraca);
-
-        akutualnaPlocha = dataklient->data->manazer.getPlocha();
-        posliSpravu(akutualnaPlocha, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
-        dataklient->data->idAktualnehoHraca++;
-        if (dataklient->data->idAktualnehoHraca == dataklient->data->pocetPripojenychKlientov)
-            dataklient->data->idAktualnehoHraca = 0;
-
-    }
-
-    pthread_exit(nullptr);
-}
-
-void * Tcp_server::execute()
-{
-    std::cout << "Task :: execute from Thread ID : " << pthread_self()
-              << std::endl;
-    return NULL;
-}
-void * Tcp_server::threadFunc(void *)
-{
-    std::cout << "Task :: threadFunc from Thread ID : " << pthread_self()
-              << std::endl;
-    return NULL;
-}
-
-typedef void * (*THREADFUNCPTR)(void *);
-
-int Tcp_server::create_server(int argc, char **argv, Manazer manazer) {
-
-    if (argc < 3) {
-        perror("Server je nutne spustit s nasledujucimi argumentmi: port pouzivatel.");
-    }
-    int port = atoi(argv[1]);
-    if (port <= 0) {
-        perror("Port musi byt cele cislo vacsie ako 0.");
-    }
-    char *userName = argv[2];
-
-    //vytvorenie TCP socketu <sys/socket.h>
-    int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-    if (serverSocket < 0) {
-        perror("Chyba - socket.");
-    }
-
-    //definovanie adresy servera <arpa/inet.h>
-    struct sockaddr_in serverAddress;
-    serverAddress.sin_family = AF_INET;             //internetove sockety
-    serverAddress.sin_addr.s_addr = INADDR_ANY;     //prijimanie spojenia z celeho internetu
-    serverAddress.sin_port = htons(port);   //nastavenie portu
-
-    //prepojenie adresy servera so socketom <sys/socket.h>
-    if (bind(serverSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0) {
-        perror("Chyba - bind.");
-    }
-
-    //server bude prijimat nove spojenia cez socket serverSocket <sys/socket.h>
-    listen(serverSocket, 10);
-
-    //server caka na pripojenie klienta <sys/socket.h>
-    struct sockaddr_in clientAddress;
-    socklen_t clientAddressLength = sizeof(clientAddress);
-
-
-    // vytvorit vlakno pre server
-    pthread_t serverVlakno;
-    //pthread_create(serverVlakno, nullptr, ,);
-
-
-    int pocetKlientov = 0;
-    int maxKlinetov = 2;
-    int clientSockets[4]{0};
-    while (pocetKlientov < maxKlinetov) {
-         int newClient = accept(serverSocket, (struct sockaddr *) &clientAddress, &clientAddressLength);
-        for (int i = 0; i < maxKlinetov; ++i) {
-            if (clientSockets[i] == 0) {
-                clientSockets[i] = newClient;
-                pocetKlientov++;
-                break;
-            }
+    while (bufferString != "hod\n") {
+        posliSpravu("<Nespravny prikaz>\nHod kockou >> ", socket);
+        bufferString = "";
+        prijmiSpravu(buffer, socket);
+        for (int i = 0; i < 4; ++i) {
+            bufferString += buffer[i];
         }
-        //uzavretie pasivneho socketu <unistd.h>
-
-        if (clientSockets[pocetKlientov] < 0) {
-            perror("Chyba - accept.");
-        }
-        printf("Aktualny pocet hracov je %d z %d\n", pocetKlientov, maxKlinetov);
-
     }
+    int cislo = kocka.getCislo();
+    string s = "Hodil si: " + to_string(cislo);
+    posliSpravu(s, socket);
+    return cislo;
+}
 
-    Tcp_server *taskPtr;
-    taskPtr = new Tcp_server(argc, argv);
 
-    //nastavenie Datovej struktury
-    idAktualnehoHraca = 0;
-    char buffer[VELKOSTBUFFERA];
+
+int vyberFigurku(char *buffer, int socket) {
+    posliSpravu("Vyber figurku >> ", socket);
+    int idFigurky;
     bzero(buffer, VELKOSTBUFFERA);
-    pthread_mutex_t mutex;
-    pthread_cond_t cond_klient;
-    pthread_mutex_init(&mutex, nullptr);
-    pthread_cond_init(&cond_klient, nullptr);
+    prijmiSpravu(buffer, socket);
+    idFigurky = atoi(buffer);
+    printf("figurka s id %d (%s)\n", idFigurky, buffer);
 
-    DATA data = {std::move(manazer), clientSockets, idAktualnehoHraca, buffer, pocetKlientov, &mutex, &cond_klient};
-
-    // vytvorit vlakna klientov
-    pthread_t klientVlakno[pocetKlientov];
-    DATAKLIENT dataklient[pocetKlientov];
-    for (int i = 0; i < pocetKlientov; i++) {
-        dataklient[i].id = i + 1;
-        dataklient[i].data = &data;
-        dataklient[i].data->socket = &clientSockets[i];
-        //pthread_create(&klientVlakno[i], nullptr, obsluhaKlienta, &dataklient[i]);
-        //thread_create(&klientVlakno[i], nullptr, (THREADFUNCPTR) Tcp_server::execute(), taskPtr);
-        pthread_create(&klientVlakno[i], nullptr, (THREADFUNCPTR) Tcp_server::obsluhaKlienta(taskPtr), &dataklient[i]);
+    while ((idFigurky - 1) > 3 || (idFigurky - 1) < 0) {
+        //cin.clear();
+        //cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        posliSpravu("<Figurka neexistuje> \nVyber figurku >> ", socket);
+        prijmiSpravu(buffer, socket);
+        idFigurky = atoi(buffer);
+        printf("figurka s id %d (%s)\n", idFigurky, buffer);
     }
 
-    /*char buffer[VELKOSTBUFFERA];
-    bzero(buffer, VELKOSTBUFFERA);*/
-    /*string akutualnaPlocha = manazer.getPlocha();
-
-    posliSpravu(akutualnaPlocha, clientSockets[idAktualnehoHraca]);
-    prijmiSpravu(buffer, clientSockets[idAktualnehoHraca]);
-
-
-    do {
-        overenieVstupu(buffer, clientSockets[idAktualnehoHraca], idAktualnehoHraca);
-
-        akutualnaPlocha = manazer.getPlocha();
-        posliSpravu(akutualnaPlocha, clientSockets[idAktualnehoHraca]);
-        idAktualnehoHraca++;
-        if (idAktualnehoHraca == pocetKlientov)
-            idAktualnehoHraca = 0;
-
-    } while (strcmp(buffer, "end") != 0);*/
-
-    for (int i = 0; i < 4; ++i) {
-        pthread_join(clientSockets[i], nullptr);
-    }
-
-    for (int i = 0; i < 4; ++i) {
-        close(clientSockets[i]);
-    }
-
-    close(serverSocket);
-
-    return (EXIT_SUCCESS);
+    return idFigurky;
 }
 
-Tcp_server::Tcp_server(int argc, char **argv) {
-    Manazer manazer = Manazer();
-    Hrac *h = manazer.getHraci();
-    for (int i = 0; i < 4; ++i) {
-        hraci[i] = &h[i];
-        //hraci[i]->setFarbu('F');
+
+int skontrolujCiJeNaHP(int idFigurky, char* buffer, int socket) {
+    while (!hraci[idAktualnehoHraca]->getFigurka(idFigurky).getJeNaHracejPloche()) {
+        posliSpravu("<Figurka nie je na hracej ploche!> \n", socket);
+        idFigurky = vyberFigurku(buffer, socket);
     }
-    create_server(argc, argv, manazer);
+    return idFigurky;
 }
 
-void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
+
+void overenieVstupu(char *buffer, int socket, int idHraca) {
     int cislo = 0;
     int idFigurky = 0;
 
@@ -231,8 +120,6 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
         int pocetHodov = 3;
         while (pocetHodov > 0) {
             cislo = hod(buffer, socket);
-            //cislo = 6;
-            //cout << "HODIL som 6" << endl;
             if (cislo == 6) {
                 while (cislo == 6) {
                     idFigurky = vyberFigurku(buffer, socket);
@@ -269,10 +156,11 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
                     pocetHodov = 0;
                 }
                 idFigurky = vyberFigurku(buffer, socket);
-                idFigurky = hraci[idHraca]->skontrolujCiJeNaHP(idFigurky);
+                idFigurky = skontrolujCiJeNaHP(idFigurky, buffer, socket);
                 figurky[idFigurky - 1].posunOPolicka(cislo);
             }
             pocetHodov--;
+            printf("pokus %d", pocetHodov);
         }
     } else { //ak je uz nejaka figurka na hracej ploche
 
@@ -313,11 +201,11 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
                 cislo = hod(buffer, socket);
             }
             idFigurky = vyberFigurku(buffer, socket);
-            idFigurky = hraci[idHraca]->skontrolujCiJeNaHP(idFigurky);
+            idFigurky = skontrolujCiJeNaHP(idFigurky, buffer, socket);
             hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
         } else {
             idFigurky = vyberFigurku(buffer, socket);
-            idFigurky = hraci[idHraca]->skontrolujCiJeNaHP(idFigurky);
+            idFigurky = skontrolujCiJeNaHP(idFigurky, buffer, socket);
             hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
         }
 
@@ -325,55 +213,141 @@ void Tcp_server::overenieVstupu(char *buffer, int socket, int idHraca) {
     hraci[idHraca]->overPocetFigurokDomcek();
 }
 
-int Tcp_server::hod(char *buffer, int socket) {
-    posliSpravu("Hod kockou >> ", socket);
+static void *obsluhaKlienta(void *args) {
+    auto *dataklient = (DATAKLIENT *) args;
+    /*
+    pthread_mutex_lock(dataklient->data->mutex);
+    while (dataklient->id != dataklient->data->idAktualnehoHraca) {
+        posliSpravu("Nie si na ťahu! Čakaj, dokým neprídeš na rad.\n", dataklient->data->socket[dataklient->id]);
+        pthread_cond_wait(dataklient->data->cond_klient, dataklient->data->mutex);
+    }
+    pthread_cond_broadcast(dataklient->data->cond_klient);
+    pthread_mutex_unlock(dataklient->data->mutex);*/
 
-    prijmiSpravu(buffer, socket);
+    pthread_mutex_lock(dataklient->data->mutex);
+    string akutualnaPlocha = dataklient->data->manazer.getPlocha();
+
+    posliSpravu(akutualnaPlocha, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
+    prijmiSpravu(dataklient->data->buffer, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
 
     string bufferString;
     for (int i = 0; i < 4; ++i) {
-        bufferString += buffer[i];
+        bufferString += dataklient->data->buffer[i];
     }
-    while (bufferString != "hod\n") {
-        posliSpravu("<Nespravny prikaz>\nHod kockou >> ", socket);
-        bufferString = "";
-        prijmiSpravu(buffer, socket);
-        for (int i = 0; i < 4; ++i) {
-            bufferString += buffer[i];
+    while (bufferString != "end\n") {
+        pthread_mutex_unlock(dataklient->data->mutex);
+
+        pthread_mutex_lock(dataklient->data->mutex);
+        overenieVstupu(dataklient->data->buffer, dataklient->data->socket[dataklient->data->idAktualnehoHraca], dataklient->data->idAktualnehoHraca);
+
+        akutualnaPlocha = dataklient->data->manazer.getPlocha();
+        posliSpravu(akutualnaPlocha, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
+        dataklient->data->idAktualnehoHraca++;
+        if (dataklient->data->idAktualnehoHraca == dataklient->data->pocetPripojenychKlientov)
+            dataklient->data->idAktualnehoHraca = 0;
+
+        pthread_mutex_unlock(dataklient->data->mutex);
+
+        pthread_mutex_lock(dataklient->data->mutex);
+    }
+    pthread_mutex_unlock(dataklient->data->mutex);
+
+    pthread_exit(nullptr);
+}
+
+int main(int argc, char **argv) {
+
+    if (argc < 3) {
+        perror("Server je nutne spustit s nasledujucimi argumentmi: port pouzivatel.");
+    }
+    int port = atoi(argv[1]);
+    if (port <= 0) {
+        perror("Port musi byt cele cislo vacsie ako 0.");
+    }
+    char *userName = argv[2];
+
+    //vytvorenie TCP socketu <sys/socket.h>
+    int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
+    if (serverSocket < 0) {
+        perror("Chyba - socket.");
+    }
+
+    //definovanie adresy servera <arpa/inet.h>
+    struct sockaddr_in serverAddress;
+    serverAddress.sin_family = AF_INET;             //internetove sockety
+    serverAddress.sin_addr.s_addr = INADDR_ANY;     //prijimanie spojenia z celeho internetu
+    serverAddress.sin_port = htons(port);   //nastavenie portu
+
+    //prepojenie adresy servera so socketom <sys/socket.h>
+    if (bind(serverSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0) {
+        perror("Chyba - bind.");
+    }
+
+    //server bude prijimat nove spojenia cez socket serverSocket <sys/socket.h>
+    listen(serverSocket, 10);
+
+    //server caka na pripojenie klienta <sys/socket.h>
+    struct sockaddr_in clientAddress;
+    socklen_t clientAddressLength = sizeof(clientAddress);
+
+    printf("Cakam na pripojenie hracov...\n");
+    int pocetKlientov = 0;
+    int maxKlientov = 1;
+    int clientSockets[4]{0};
+    while (pocetKlientov < maxKlientov) {
+        int newClient = accept(serverSocket, (struct sockaddr *) &clientAddress, &clientAddressLength);
+        for (int i = 0; i < maxKlientov; ++i) {
+            if (clientSockets[i] == 0) {
+                clientSockets[i] = newClient;
+                pocetKlientov++;
+                break;
+            }
         }
+        //uzavretie pasivneho socketu <unistd.h>
+
+        if (clientSockets[pocetKlientov] < 0) {
+            perror("Chyba - accept.");
+        }
+        printf("Aktualny pocet hracov je %d z %d\n", pocetKlientov, maxKlientov);
+
     }
-    int cislo = kocka.getCislo();
-    string s = "Hodil si: " + to_string(cislo);
-    posliSpravu(s, socket);
-    return cislo;
-}
-
-int Tcp_server::vyberFigurku(char *buffer, int socket) {
-    posliSpravu("Vyber figurku >> ", socket);
-    int idFigurky;
-    prijmiSpravu(buffer, socket);
-    idFigurky = atoi(buffer);
-
-    while ((idFigurky - 1) > 3 || (idFigurky - 1) < 0) {
-        //cin.clear();
-        //cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        posliSpravu("<Figurka neexistuje> \nVyber figurku >> ", socket);
-        prijmiSpravu(buffer, socket);
-        idFigurky = atoi(buffer);
+    //nastavenie Datovej struktury
+    Manazer manazer = Manazer();
+    Hrac *h = manazer.getHraci();
+    for (int i = 0; i < 4; ++i) {
+        hraci[i] = &h[i];
     }
-
-    return idFigurky;
-}
-
-void Tcp_server::posliSpravu(string sprava, int socket) {
-    send(socket, sprava.c_str(), strlen(sprava.c_str()) + 1, 0);
-
-}
-
-void Tcp_server::prijmiSpravu(char *buffer, int socket) {
+    idAktualnehoHraca = 0;
+    char buffer[VELKOSTBUFFERA];
     bzero(buffer, VELKOSTBUFFERA);
-    recv(socket, buffer, VELKOSTBUFFERA, 0);
-    printf("%s\n", buffer);
+    pthread_mutex_t mutex;
+    pthread_cond_t cond_klient;
+    pthread_mutex_init(&mutex, nullptr);
+    pthread_cond_init(&cond_klient, nullptr);
+
+    DATA data = {manazer, clientSockets, idAktualnehoHraca, buffer, pocetKlientov, &mutex, &cond_klient};
+
+    // vytvorit vlakna klientov
+    pthread_t klientVlakno[pocetKlientov];
+    DATAKLIENT dataklient[pocetKlientov];
+    for (int i = 0; i < pocetKlientov; i++) {
+        dataklient[i].id = i;
+        dataklient[i].data = &data;
+        dataklient[i].data->socket = &clientSockets[i];
+        pthread_create(&klientVlakno[i], nullptr, obsluhaKlienta, &dataklient[i]);
+    }
+
+    for (int i = 0; i < pocetKlientov; ++i) {
+        pthread_join(klientVlakno[i], nullptr);
+    }
+
+    for (int i = 0; i < pocetKlientov; ++i) {
+        close(clientSockets[i]);
+    }
+
+    close(serverSocket);
+
+    return (EXIT_SUCCESS);
 }
 
 
