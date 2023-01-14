@@ -8,7 +8,7 @@ class HraciaPlocha {
 
 private:
     const int velkost = 11;
-    Hrac hraci[4];
+    Hrac* hraci[4];
 
     // kde sa nachadzaju figurky na zaciatku hry
     int zBodyCerveny[4][2]{{0, 0},

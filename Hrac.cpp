@@ -284,4 +284,8 @@ void Hrac::overPocetFigurokDomcek() {
     }
 }
 
+Figurka *Hrac::getFigurky() {
+    return figurky;
+}
+
 

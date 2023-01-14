@@ -17,6 +17,7 @@ using namespace std;
 #define VELKOSTBUFFERA 1024
 
 Hrac* hraci[4];
+
 Kocka kocka;
 int idAktualnehoHraca;
 
@@ -80,14 +81,11 @@ int hod(char *buffer, int socket) {
 int vyberFigurku(char *buffer, int socket) {
     posliSpravu("Vyber figurku >> ", socket);
     int idFigurky;
-    bzero(buffer, VELKOSTBUFFERA);
     prijmiSpravu(buffer, socket);
     idFigurky = atoi(buffer);
     printf("figurka s id %d (%s)\n", idFigurky, buffer);
 
     while ((idFigurky - 1) > 3 || (idFigurky - 1) < 0) {
-        //cin.clear();
-        //cin.ignore(numeric_limits<streamsize>::max(), '\n');
         posliSpravu("<Figurka neexistuje> \nVyber figurku >> ", socket);
         prijmiSpravu(buffer, socket);
         idFigurky = atoi(buffer);
@@ -99,22 +97,81 @@ int vyberFigurku(char *buffer, int socket) {
 
 
 int skontrolujCiJeNaHP(int idFigurky, char* buffer, int socket) {
-    while (!hraci[idAktualnehoHraca]->getFigurka(idFigurky).getJeNaHracejPloche()) {
+    while (!hraci[idAktualnehoHraca]->getFigurka(idFigurky - 1).getJeNaHracejPloche()) {
         posliSpravu("<Figurka nie je na hracej ploche!> \n", socket);
         idFigurky = vyberFigurku(buffer, socket);
     }
     return idFigurky;
 }
 
+/*
+void overPozicieFigurok(int pocetKrokov, int id) {
+    id--;
+    int pocitadlo = 1;
+    int pocetNaHP;
+    int *povodnaPozicia = new int[2];
+    int *ocakavanaPozicia = new int[2];
+
+    while (pocitadlo != 0) {
+        pocitadlo = 0;
+        pocetNaHP = 0;
+        povodnaPozicia[0] = figurky[id].getPoziciu()[0];
+        povodnaPozicia[1] = figurky[id].getPoziciu()[1];
+
+
+        if ((figurky[id].getPocetKrokov() + pocetKrokov) > 43) {       //po 39 krokoch je figurka pred domcekom (domcek - > 40, 41, 42, 43)
+            printf("%s %c%d %s", "Figurka ",farbaHraca,id + 1," sa nemoze sa pohnut do domceka.\n");
+            pocitadlo++;
+        } else {
+            figurky[id].posunOPolicka(pocetKrokov);
+        }
+
+        ocakavanaPozicia[0] = figurky[id].getPoziciu()[0];
+        ocakavanaPozicia[1] = figurky[id].getPoziciu()[1];
+
+        for (int i = 0; i < pocetFigurok; ++i) {
+            if (i != id) {
+                if (ocakavanaPozicia[0] == figurky[i].getPoziciu()[0] &&
+                    ocakavanaPozicia[1] == figurky[i].getPoziciu()[1]) {
+                    figurky[id].odpocitajKroky(pocetKrokov);
+                    figurky[id].setPoziciu(povodnaPozicia[0], povodnaPozicia[1]);
+                    pocitadlo++;
+                }
+                if (figurky[i].getJeNaHracejPloche()) {
+                    pocetNaHP++;
+                }
+            }
+        }
+        if (pocitadlo > 0) {
+            if (pocetNaHP == 0) {
+                if (pocetKrokov != 6 && !dostupnaVZakladni()) {
+                    printf("%s", "<Nemozno vykonat ziadny tah> \n");
+                    break;
+                } else {
+                    id = vyberFigurku();
+                    id = skontrolujCiJeNaHP(id) - 1;
+                }
+            } else {
+                printf("%s", "<S danou figurkou sa nemozno pohnut> \n");
+                id = vyberFigurku();
+                id = skontrolujCiJeNaHP(id) - 1;
+            }
+        }
+    }
+
+}
+ */
 
 void overenieVstupu(char *buffer, int socket, int idHraca) {
     int cislo = 0;
     int idFigurky = 0;
 
-    Figurka figurky[4];
+    Figurka* figurky[4];
+    Figurka *f = hraci[idHraca]->getFigurky();
     for (int i = 0; i < 4; ++i) {
-        figurky[i] = hraci[idHraca]->getFigurka(i);
+        figurky[i] = &f[i];
     }
+
 
     if (!hraci[idHraca]->suFigurkyNaHP()) {
         int pocetHodov = 3;
@@ -127,10 +184,10 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
 
                     while (!validnyTah) {
                         int pocitadlo = 0;
-                        if (figurky[idFigurky - 1].getJeVZakladni()) {
+                        if (figurky[idFigurky - 1]->getJeVZakladni()) {
                             for (int i = 0; i < 4; ++i) {
                                 if (i != idFigurky - 1) {
-                                    if (figurky[i].getJeNaStartovacejPozicii()) {
+                                    if (figurky[i]->getJeNaStartovacejPozicii()) {
                                         pocitadlo++;
                                     }
                                 }
@@ -139,14 +196,14 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
                                 printf("%s", "<S danou figurkou sa nemozno pohnut> \n");
                                 idFigurky = vyberFigurku(buffer, socket);
                             } else {
-                                figurky[idFigurky - 1].setNaStartovaciuPoziciu();
+                                figurky[idFigurky - 1]->setNaStartovaciuPoziciu();
                                 validnyTah = true;
                             }
-                        } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
-                                   figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                        } else if (figurky[idFigurky - 1]->getJeNaStartovacejPozicii() ||
+                                   figurky[idFigurky - 1]->getJeNaHracejPloche()) {
                             hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
                             validnyTah = true;
-                        } else if (figurky[idFigurky - 1].getJeVDomceku()) {
+                        } else if (figurky[idFigurky - 1]->getJeVDomceku()) {
                             printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
                             idFigurky = vyberFigurku(buffer, socket);
                         }
@@ -157,7 +214,7 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
                 }
                 idFigurky = vyberFigurku(buffer, socket);
                 idFigurky = skontrolujCiJeNaHP(idFigurky, buffer, socket);
-                figurky[idFigurky - 1].posunOPolicka(cislo);
+                figurky[idFigurky - 1]->posunOPolicka(cislo);
             }
             pocetHodov--;
             printf("pokus %d", pocetHodov);
@@ -173,10 +230,10 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
                 idFigurky = vyberFigurku(buffer, socket);
                 while (!validnyTah) {
                     int pocitadlo = 0;
-                    if (figurky[idFigurky - 1].getJeVZakladni()) {
+                    if (figurky[idFigurky - 1]->getJeVZakladni()) {
                         for (int i = 0; i < 4; ++i) {
                             if (i != idFigurky - 1) {
-                                if (figurky[i].getJeNaStartovacejPozicii()) {
+                                if (figurky[i]->getJeNaStartovacejPozicii()) {
                                     pocitadlo++;
                                 }
                             }
@@ -185,15 +242,15 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
                             posliSpravu("<S danou figurkou sa nemozno pohnut> \n", socket);
                             idFigurky = vyberFigurku(buffer, socket);
                         } else {
-                            figurky[idFigurky - 1].setNaStartovaciuPoziciu();
+                            figurky[idFigurky - 1]->setNaStartovaciuPoziciu();
                             validnyTah = true;
                         }
 
-                    } else if (figurky[idFigurky - 1].getJeNaStartovacejPozicii() ||
-                               figurky[idFigurky - 1].getJeNaHracejPloche()) {
+                    } else if (figurky[idFigurky - 1]->getJeNaStartovacejPozicii() ||
+                               figurky[idFigurky - 1]->getJeNaHracejPloche()) {
                         hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
                         validnyTah = true;
-                    } else if (figurky[idFigurky - 1].getJeVDomceku()) {
+                    } else if (figurky[idFigurky - 1]->getJeVDomceku()) {
                         posliSpravu("<Figurka sa nemoze pohnut z domceka> \n", socket);
                         idFigurky = vyberFigurku(buffer, socket);
                     }

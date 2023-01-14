@@ -23,6 +23,7 @@ public:
     void overPocetFigurokDomcek();
     char getFarbu();
     Figurka getFigurka(int id);
+    Figurka* getFigurky();
     void vykonajTah();
     bool getVyhralHru();
     bool suFigurkyNaHP();

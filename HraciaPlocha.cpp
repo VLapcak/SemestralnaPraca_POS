@@ -22,8 +22,8 @@ void HraciaPlocha::vykresliPlochu() {
     for (auto hr: hraci) {
         for (int j = 0; j < 4; ++j) {
 
-            Figurka figurka = hr.getFigurka(j);
-            switch (hr.getFarbu()) {
+            Figurka figurka = hr->getFigurka(j);
+            switch (hr->getFarbu()) {
                 case 'C':
                     aktualnaPlocha[figurka.getPoziciu()[0]][figurka.getPoziciu()[1]] = 5 * 10 + figurka.getIDFigurky();
                     break;
@@ -95,8 +95,8 @@ void HraciaPlocha::setZakladnaPlocha() {
     for (auto hr: hraci) {
         for (int j = 0; j < 4; ++j) {
 
-            Figurka figurka = hr.getFigurka(j);
-            switch (hr.getFarbu()) {
+            Figurka figurka = hr->getFigurka(j);
+            switch (hr->getFarbu()) {
                 case 'C':
                     figurka.setPoziciu(zBodyCerveny[j][0], zBodyCerveny[j][1]);
                     break;
@@ -132,11 +132,12 @@ int *HraciaPlocha::getPoziciuZakladne(char farba, int idFigurky) {
 
 void HraciaPlocha::setHracov(Hrac *h) {
     for (int i = 0; i < 4; ++i) {
-        hraci[i] = h[i];
+        hraci[i] = &h[i];
     }
 }
 
 std::string HraciaPlocha::getPlocha() {
+    vykresliPlochu();
     return vypisPlochy;
 }
 
