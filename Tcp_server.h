@@ -6,13 +6,15 @@
 #include "Hrac.h"
 #include "Manazer.h"
 
+using namespace std;
+
 class Tcp_server {
     int create_server(int argc, char *argv[], Manazer manazer);
-    static void *hrajServer(void *args);
+    void *obsluhaKlienta(void *args);
     Kocka kocka;
     Hrac* hraci[4];
     int idAktualnehoHraca;
-    void posliSpravu(std::string sprava, int socket);
+    void posliSpravu(string sprava, int socket);
     void prijmiSpravu(char* buffer, int socket);
 
 public:
@@ -20,6 +22,8 @@ public:
     void overenieVstupu(char* buffer, int socket, int idHraca);
     int hod(char* buffer, int socket);
     int vyberFigurku(char* buffer, int socket);
+    void *execute();
+    void *threadFunc(void *);
 };
 
 

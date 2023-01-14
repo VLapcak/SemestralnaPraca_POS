@@ -13,10 +13,6 @@ using namespace std;
 
 #define VELKOSTBUFFERA 1024
 
-static void* hrajKlient(void *args) {
-
-    return nullptr;
-}
 
 void posliSpravu(const char* sprava, int socket) {
     send(socket, sprava, strlen(sprava) + 1, 0);
@@ -26,6 +22,34 @@ void prijmiSpravu(char* buffer, int socket) {
     bzero(buffer, VELKOSTBUFFERA);
     recv(socket, buffer, VELKOSTBUFFERA, 0);
     printf("%s\n", buffer);
+}
+
+typedef struct data {
+    int socket;
+    char* buffer;
+}DATA;
+
+static void* komunikuj(void *args) {
+    DATA *data = (DATA *) args;
+
+    prijmiSpravu(data->buffer, data->socket);
+    posliSpravu("[HRA]: Klient dostal plochu", data->socket);
+
+    string bufferString;
+    for (int i = 0; i < 4; ++i) {
+        bufferString += data->buffer[i];
+    }
+    while (bufferString != "end\n") {
+        prijmiSpravu(data->buffer, data->socket);
+
+        bzero(data->buffer,VELKOSTBUFFERA);
+        fgets(data->buffer, VELKOSTBUFFERA-1, stdin);
+        send(data->socket, data->buffer, VELKOSTBUFFERA, 0);
+        //prijmiSpravu(buffer, sock);
+
+    }
+
+    pthread_exit(nullptr);
 }
 
 int main(int argc, char **argv) {
@@ -63,7 +87,7 @@ int main(int argc, char **argv) {
 
     char buffer[VELKOSTBUFFERA];
     bzero(buffer, VELKOSTBUFFERA);
-    prijmiSpravu(buffer, sock);
+    /*prijmiSpravu(buffer, sock);
     posliSpravu("[HRA]: Klient dostal plochu", sock);
 
     do {
@@ -74,7 +98,15 @@ int main(int argc, char **argv) {
         send(sock, buffer, VELKOSTBUFFERA, 0);
         //prijmiSpravu(buffer, sock);
 
-    } while (strcmp(buffer, "end") != 0);
+    } while (strcmp(buffer, "end") != 0);*/
+
+    DATA data = {sock, buffer};
+
+    pthread_t klientVlakno;
+    pthread_create(&klientVlakno, nullptr, komunikuj, &data);
+
+    pthread_join(klientVlakno, nullptr);
+
 
     close(sock);
 

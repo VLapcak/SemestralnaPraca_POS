@@ -10,15 +10,83 @@
 #include "Kocka.h"
 #include <iostream>
 #include <limits>
+#include <utility>
+
 
 using namespace std;
 
 #define VELKOSTBUFFERA 1024
 
-void *Tcp_server::hrajServer(void *args) {
+typedef struct data {
+    Manazer manazer;
+    int *socket;
+    //struct sockaddr_in;
+    int idAktualnehoHraca;
+    char* buffer;
+    int pocetPripojenychKlientov;
 
-    return nullptr;
+    pthread_mutex_t* mutex;
+    pthread_cond_t* cond_klient;
+}DATA;
+
+typedef struct dataKlient {
+    int id;
+
+    DATA *data;
+}DATAKLIENT;
+
+void *Tcp_server::obsluhaKlienta(void *args) {
+    DATAKLIENT *dataklient = (DATAKLIENT *) args;
+
+
+
+    /*pthread_mutex_lock(dataklient->data->mutex);
+    while (dataklient->id != dataklient->data->idAktualnehoHraca) {
+        posliSpravu("Nie si na ťahu! Čakaj, dokým neprídeš na rad.\n", dataklient->data->socket[dataklient->id]);
+        pthread_cond_wait(dataklient->data->cond_klient, dataklient->data->mutex);
+    }
+    pthread_cond_broadcast(dataklient->data->cond_klient);
+    pthread_mutex_unlock(dataklient->data->mutex);*/
+
+
+    string akutualnaPlocha = dataklient->data->manazer.getPlocha();
+
+    posliSpravu(akutualnaPlocha, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
+    prijmiSpravu(dataklient->data->buffer, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
+
+
+    string bufferString;
+    for (int i = 0; i < 4; ++i) {
+        bufferString += dataklient->data->buffer[i];
+    }
+    while (bufferString != "end\n") {
+        overenieVstupu(dataklient->data->buffer, dataklient->data->socket[dataklient->data->idAktualnehoHraca], dataklient->data->idAktualnehoHraca);
+
+        akutualnaPlocha = dataklient->data->manazer.getPlocha();
+        posliSpravu(akutualnaPlocha, dataklient->data->socket[dataklient->data->idAktualnehoHraca]);
+        dataklient->data->idAktualnehoHraca++;
+        if (dataklient->data->idAktualnehoHraca == dataklient->data->pocetPripojenychKlientov)
+            dataklient->data->idAktualnehoHraca = 0;
+
+    }
+
+    pthread_exit(nullptr);
 }
+
+void * Tcp_server::execute()
+{
+    std::cout << "Task :: execute from Thread ID : " << pthread_self()
+              << std::endl;
+    return NULL;
+}
+void * Tcp_server::threadFunc(void *)
+{
+    std::cout << "Task :: threadFunc from Thread ID : " << pthread_self()
+              << std::endl;
+    return NULL;
+}
+
+typedef void * (*THREADFUNCPTR)(void *);
 
 int Tcp_server::create_server(int argc, char **argv, Manazer manazer) {
 
@@ -81,17 +149,36 @@ int Tcp_server::create_server(int argc, char **argv, Manazer manazer) {
         printf("Aktualny pocet hracov je %d z %d\n", pocetKlientov, maxKlinetov);
 
     }
-    close(serverSocket);
 
+    Tcp_server *taskPtr;
+    taskPtr = new Tcp_server(argc, argv);
 
-    // vytvorit vlakna klientov
-
-
+    //nastavenie Datovej struktury
+    idAktualnehoHraca = 0;
     char buffer[VELKOSTBUFFERA];
     bzero(buffer, VELKOSTBUFFERA);
-    string s;
-    idAktualnehoHraca = 0;
-    string akutualnaPlocha = manazer.getPlocha();
+    pthread_mutex_t mutex;
+    pthread_cond_t cond_klient;
+    pthread_mutex_init(&mutex, nullptr);
+    pthread_cond_init(&cond_klient, nullptr);
+
+    DATA data = {std::move(manazer), clientSockets, idAktualnehoHraca, buffer, pocetKlientov, &mutex, &cond_klient};
+
+    // vytvorit vlakna klientov
+    pthread_t klientVlakno[pocetKlientov];
+    DATAKLIENT dataklient[pocetKlientov];
+    for (int i = 0; i < pocetKlientov; i++) {
+        dataklient[i].id = i + 1;
+        dataklient[i].data = &data;
+        dataklient[i].data->socket = &clientSockets[i];
+        //pthread_create(&klientVlakno[i], nullptr, obsluhaKlienta, &dataklient[i]);
+        //thread_create(&klientVlakno[i], nullptr, (THREADFUNCPTR) Tcp_server::execute(), taskPtr);
+        pthread_create(&klientVlakno[i], nullptr, (THREADFUNCPTR) Tcp_server::obsluhaKlienta(taskPtr), &dataklient[i]);
+    }
+
+    /*char buffer[VELKOSTBUFFERA];
+    bzero(buffer, VELKOSTBUFFERA);*/
+    /*string akutualnaPlocha = manazer.getPlocha();
 
     posliSpravu(akutualnaPlocha, clientSockets[idAktualnehoHraca]);
     prijmiSpravu(buffer, clientSockets[idAktualnehoHraca]);
@@ -106,13 +193,17 @@ int Tcp_server::create_server(int argc, char **argv, Manazer manazer) {
         if (idAktualnehoHraca == pocetKlientov)
             idAktualnehoHraca = 0;
 
-    } while (strcmp(buffer, "end") != 0);
+    } while (strcmp(buffer, "end") != 0);*/
 
+    for (int i = 0; i < 4; ++i) {
+        pthread_join(clientSockets[i], nullptr);
+    }
 
     for (int i = 0; i < 4; ++i) {
         close(clientSockets[i]);
     }
 
+    close(serverSocket);
 
     return (EXIT_SUCCESS);
 }
@@ -284,4 +375,6 @@ void Tcp_server::prijmiSpravu(char *buffer, int socket) {
     recv(socket, buffer, VELKOSTBUFFERA, 0);
     printf("%s\n", buffer);
 }
+
+
 

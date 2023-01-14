@@ -176,6 +176,8 @@ int Hrac::hod() {
     int cislo = kocka.getCislo();
     printf("%s %d\n\n", "Hodil si:", cislo);
     return cislo;*/
+
+    return 0;
 }
 
 int Hrac::vyberFigurku() {
