@@ -16,7 +16,7 @@ Manazer::Manazer() {
     }
     hp.setHracov(hraci);
     hp.setZakladnaPlocha();
-    hp.vykresliPlochu();
+    //hp.vykresliPlochu();
 
     ////Pre test viacerych hracov - NEMAZAT!!!
     //vyberNahodnehoZacinajuceho();
