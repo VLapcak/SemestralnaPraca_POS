@@ -48,7 +48,6 @@ typedef struct dataKlient {
 void posliSpravu(char *buffer, const char *sprava, int socket) {
     send(socket, sprava, strlen(sprava) + 1, 0);
     bzero(buffer, VELKOSTBUFFERA);
-    recv(socket, buffer, VELKOSTBUFFERA, 0);
 }
 
 /*void prijmiSpravu(char *buffer, int socket) {
@@ -61,15 +60,12 @@ void prijmiSpravu(char *buffer, int socket) {
     bzero(buffer, VELKOSTBUFFERA);
     recv(socket, buffer, VELKOSTBUFFERA, 0);
     printf("%s\n", buffer);
-
-    const char* sprava = "";
-    send(socket, sprava, strlen(sprava) + 1, 0);
 }
 
 
 int hod(char *buffer, int socket) {
     posliSpravu(buffer, "Hod kockou >> ", socket);
-
+    bzero(buffer, VELKOSTBUFFERA);
     prijmiSpravu(buffer, socket);
 
     string bufferString;
@@ -77,6 +73,7 @@ int hod(char *buffer, int socket) {
         bufferString += buffer[i];
     }
     while (bufferString != "hod\n") {
+        bzero(buffer, VELKOSTBUFFERA);
         posliSpravu(buffer, "<Nespravny prikaz>\nHod kockou >> ", socket);
         bufferString = "";
         prijmiSpravu(buffer, socket);
@@ -186,7 +183,6 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
         figurky[i] = &f[i];
     }
 
-
     if (!hraci[idHraca]->suFigurkyNaHP()) {
         int pocetHodov = 3;
         while (pocetHodov > 0) {
@@ -207,7 +203,7 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
                                 }
                             }
                             if (pocitadlo > 0) {
-                                printf("%s", "<S danou figurkou sa nemozno pohnut> \n");
+                                posliSpravu(buffer, "<S danou figurkou sa nemozno pohnut> \n", socket);
                                 idFigurky = vyberFigurku(buffer, socket);
                             } else {
                                 figurky[idFigurky - 1]->setNaStartovaciuPoziciu();
@@ -218,7 +214,7 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
                             hraci[idHraca]->overPozicieFigurok(cislo, idFigurky);
                             validnyTah = true;
                         } else if (figurky[idFigurky - 1]->getJeVDomceku()) {
-                            printf("%s", "<Figurka sa nemoze pohnut z domceka> \n");
+                            posliSpravu(buffer, "<Figurka sa nemoze pohnut z domceka> \n", socket);
                             idFigurky = vyberFigurku(buffer, socket);
                         }
                     }
@@ -231,7 +227,6 @@ void overenieVstupu(char *buffer, int socket, int idHraca) {
                 figurky[idFigurky - 1]->posunOPolicka(cislo);
             }
             pocetHodov--;
-            printf("pokus %d", pocetHodov);
         }
     } else { //ak je uz nejaka figurka na hracej ploche
 
@@ -297,12 +292,11 @@ static void *obsluhaKlienta(void *args) {
     pthread_mutex_unlock(dataklient->data->mutex);*/
 
     pthread_mutex_lock(dataklient->data->mutex);
+
     string akutualnaPlocha = dataklient->data->manazer.getPlocha();
 
     posliSpravu(dataklient->data->buffer, akutualnaPlocha.c_str(), dataklient->socket);
     prijmiSpravu(dataklient->data->buffer, dataklient->socket);
-
-
 
     string bufferString;
     for (int i = 0; i < 4; ++i) {
@@ -315,8 +309,6 @@ static void *obsluhaKlienta(void *args) {
         pthread_mutex_lock(dataklient->data->mutex);
         while (dataklient->id == dataklient->data->idAktualnehoHraca) {
             pthread_mutex_unlock(dataklient->data->mutex);
-            //posliSpravu("Nie si na ťahu! Čakaj, dokým neprídeš na rad.\n", dataklient->socket);
-            //pthread_cond_wait(dataklient->data->cond_klient, dataklient->data->mutex);
 
             pthread_mutex_lock(dataklient->data->mutex);
             overenieVstupu(dataklient->data->buffer, dataklient->socket, dataklient->data->idAktualnehoHraca);
@@ -334,18 +326,6 @@ static void *obsluhaKlienta(void *args) {
         //pthread_cond_broadcast(dataklient->data->cond_klient);
         pthread_mutex_unlock(dataklient->data->mutex);
 
-
-
-        /*pthread_mutex_lock(dataklient->data->mutex);
-        overenieVstupu(dataklient->data->buffer, dataklient->socket, dataklient->data->idAktualnehoHraca);
-
-        akutualnaPlocha = dataklient->data->manazer.getPlocha();
-        posliSpravu(akutualnaPlocha, dataklient->socket);
-        dataklient->data->idAktualnehoHraca++;
-        if (dataklient->data->idAktualnehoHraca == dataklient->data->pocetPripojenychKlientov)
-            dataklient->data->idAktualnehoHraca = 0;
-
-        pthread_mutex_unlock(dataklient->data->mutex);*/
 
         pthread_mutex_lock(dataklient->data->mutex);
     }
@@ -392,7 +372,7 @@ int main(int argc, char **argv) {
 
     printf("Cakam na pripojenie hracov...\n");
     int pocetKlientov = 0;
-    int maxKlientov = 2;
+    int maxKlientov = 4;
     int clientSockets[4]{0};
     while (pocetKlientov < maxKlientov) {
         int newClient = accept(serverSocket, (struct sockaddr *) &clientAddress, &clientAddressLength);

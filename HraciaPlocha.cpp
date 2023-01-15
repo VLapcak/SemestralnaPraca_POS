@@ -10,6 +10,7 @@ HraciaPlocha::HraciaPlocha() : velkost(11) {
 }
 //// funkcia pre vykreslenie hracej plochy
 void HraciaPlocha::vykresliPlochu() {
+    vypisPlochy = "";
 
     //inicializacia aktualnej plochy aby sa rovnala zakladnej ploche
     for (int i = 0; i < velkost; ++i) {

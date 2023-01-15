@@ -17,16 +17,15 @@ using namespace std;
 void posliSpravu(char *buffer, const char *sprava, int socket) {
     send(socket, sprava, strlen(sprava) + 1, 0);
     bzero(buffer, VELKOSTBUFFERA);
-    recv(socket, buffer, VELKOSTBUFFERA, 0);
 }
 
 void prijmiSpravu(char *buffer, int socket) {
     bzero(buffer, VELKOSTBUFFERA);
     recv(socket, buffer, VELKOSTBUFFERA, 0);
     printf("%s\n", buffer);
-
-    const char* sprava = "";
-    send(socket, sprava, strlen(sprava) + 1, 0);
+    bzero(buffer, VELKOSTBUFFERA);
+    //const char* sprava = "";
+    //send(socket, sprava, strlen(sprava) + 1, 0);
 }
 
 typedef struct data {
@@ -41,31 +40,29 @@ typedef struct data {
 static void *komunikuj(void *args) {
     DATA *data = (DATA *) args;
 
+    pthread_mutex_lock(data->mutex);
     string sprava = "[HRA]: Klient ";
     sprava += data->username;
     sprava += " dostal plochu";
 
     prijmiSpravu(data->buffer, data->socket);
     posliSpravu(data->buffer, sprava.c_str(), data->socket);
-
-    pthread_mutex_lock(data->mutex);
-
     string bufferString;
     for (int i = 0; i < 4; ++i) {
         bufferString += data->buffer[i];
     }
 
     while (bufferString != "end\n") {
-
-
         pthread_mutex_unlock(data->mutex);
 
         pthread_mutex_lock(data->mutex);
+
         prijmiSpravu(data->buffer, data->socket);
 
         bzero(data->buffer, VELKOSTBUFFERA);
         fgets(data->buffer, VELKOSTBUFFERA - 1, stdin);
         send(data->socket, data->buffer, VELKOSTBUFFERA, 0);
+        bzero(data->buffer, VELKOSTBUFFERA);
 
         for (int i = 0; i < 4; ++i) {
             bufferString += data->buffer[i];
